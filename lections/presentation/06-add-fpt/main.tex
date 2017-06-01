@@ -1,0 +1,711 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[Сложение в ПЗ]{Сложение в формате с плавающей точкой}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+\begin{frame}<presentation>
+    \frametitle{Содержание}
+    \tableofcontents
+\end{frame}
+
+
+
+\begin{frame}
+    \frametitle{Формат с плавающей точкой}
+    
+    \[
+        X = \FloatExpression{X}{2},
+    \]
+    где $\MantissOf{X}$ --- нормализованная мантисса числа $X$, $\OrderOf{X}$ --- порядок числа $X$, подобранный так, чтобы $\MantissOf{X}$ была нормализованной.
+    \begin{block}{Правила нормализации $X\neq 0$}
+        Мантисса $\MantissOf{X}$ получается из двоичного представления $X$ переносом точки в такую позицию, чтобы целая часть была равна нулю, а в старшем разряде дробной части была единица:
+        \[(0.\underbrace{1xxx\cdots xxx}_{\text{\tiny{разряды мантиссы}}})_2\]
+        порядок $\OrderOf{X}$ определяет на сколько разрядов нужно передвинуть запятую в мантиссе, чтобы получить исходное число.
+    \end{block}
+\end{frame}
+
+
+\section{Порядок}
+
+
+\subsection{Примеры представления}
+
+
+\begin{frame}
+    \frametitle{Формат для примеров}
+
+    \[
+        \FloatMyHex{X}{XXXXXXXXX}{X}{XXXXX}
+    \]
+    \begin{itemize}
+        \item Разряды нормализованной мантиссы в прямом коде хранятся в разрядах $[15:6]$.
+        \item Порядок в прямом коде хранится в разрядах $[5:0]$.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Целое, без потерь}
+    \[
+        -9=(-1001)_2=(-.1001)\cdot 2^{4}
+    \]
+    
+    \[
+        \FloatMyHex{1}{100100000}{0}{00100}
+    \]
+    
+    \[
+        (-.100100000)_2\cdot 2^{4}=-9
+    \]
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Целое, с потерями}
+    \[
+        999=(1111100111)_2=(.1111100111)\cdot 2^{10}
+    \]
+    
+    \[
+        \FloatMyHex{0}{111110011}{0}{01010}
+    \]
+    
+    \[
+        (.111110011)_2\cdot 2^{10}=\fbox{998}
+    \]
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Дробное, без потерь}
+    \[
+        0.171875=(0.001011)_2=(.1011)\cdot 2^{-2}
+    \]
+    
+    \[
+        \FloatMyHex{0}{101100000}{1}{00010}
+    \]
+    
+    \[
+        (.101100000)_2\cdot 2^{-2}=0,171875
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Дробное, с потерями}
+    \[
+        -0.2=(-0.[0011])_2=(-.[1100])\cdot 2^{-2}
+    \]
+    
+    \[
+        \FloatMyHex{1}{110011001}{1}{00010}
+    \]
+    
+    \[
+        (-.110011001)_2\cdot 2^{-2}=\fbox{-0.19970703125}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Ноль}
+    
+    \[
+        \FloatMyHex{0}{000000000}{0}{00000}
+    \]
+\end{frame}
+
+
+\subsection{Правила сложения}
+
+
+\begin{frame}
+    \frametitle{Правила сложения}
+
+    \[X+Y=\FloatExpression{X}{2}+\FloatExpression{Y}{2}\]
+        
+    \begin{enumerate}
+        \item Порядки чисел выравниваются до большего, мантисса числа с меньшим порядком сдвигается вправо на модуль разности порядков.
+        \[
+            \begin{cases}
+                (\OrderOf{X}-\OrderOf{Y}) \ge 0, & \MantissOf{Y}'\gets(\MantissOf{Y}\gg |\OrderOf{X}-\OrderOf{Y}|), \MantissOf{X}'\gets\MantissOf{X},\\
+                (\OrderOf{X}-\OrderOf{Y}) < 0,   & \MantissOf{X}'\gets(\MantissOf{X}\gg |\OrderOf{X}-\OrderOf{Y}|), \MantissOf{Y}'\gets\MantissOf{Y}.
+            \end{cases}
+        \]
+        \item Получившиеся мантиссы складываются $\MantissOf{R}=\MantissOf{X}'+\MantissOf{Y}'$. При этом порядок результата: $\OrderOf{R}=\max(\OrderOf{X}, \OrderOf{Y})$.
+        
+        \item Выполняется нормализация результата, если он получился не нормализованым.
+    \end{enumerate}
+\end{frame}
+
+
+\subsection{Примеры сложения}
+
+\begin{frame}
+    \frametitle{13+29}
+
+    \begin{center}
+        \FloatMyHex{0}{110100000}{0}{00100} +
+        \FloatMyHex{0}{111010000}{0}{00101}
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Order$}
+                                                                & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,110100000}        & \Number{0,00100}      & $X=13$, ПК\\ 
+            \Number{0,111010000}        & \Number{0,00101}      & $Y=29$, ПК\\ \hline
+                                        & \Addition{00,00100}
+                                                   {11,11011}
+                                                   {11,11111}   & $\OrderOf{X}-\OrderOf{Y} < 0$, в МДК, денормализуется $\MantissOf{X}$ \\ \hline
+            \Number{0,011010000}        & \Number{0,00101}      & $X'$, денормализованное \\ \hline
+            \Addition{00,011010000}     
+                     {00,111010000}     
+                     {01,010100000}     &                       & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, в МДК, ПРС!\\ \hline
+            \NumberHi{01}{,010100000}   & \Number{0,00101}      & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\gg 1$; 
+                                                                                 $\OrderOf{R}\gets\OrderOf{R}+1$ \\
+            \Number{0,101010000}        & \Number{0,00110}      & Рез-т!
+        \end{tabular}
+    }
+    \[
+        \FloatMyHex{0}{101010000}{0}{00110}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{-17+14}
+
+    \begin{center}
+        \FloatMyHex{1}{100010000}{0}{00101} +
+        \FloatMyHex{0}{111000000}{0}{00100} 
+    \end{center}
+    
+    \resizebox{!}{.6\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Order$}
+                                                                & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{1,100010000}        & \Number{0,00101}      & $X=-17$, ПК\\ 
+            \Number{0,111000000}        & \Number{0,00100}      & $Y=14$,  ПК\\ \hline
+                                        & \Addition{00,00101}
+                                                   {11,11100}
+                                                   {00,00001}   & $\OrderOf{X}-\OrderOf{Y} \ge 0$, МДК, денормализуется $\MantissOf{Y}$ \\ \hline
+            \Number{0,011100000}        & \Number{0,00101}      & $Y'$, денормализованное \\ \hline
+            \Addition{11,011110000} 
+                     {00,011100000} 
+                     {11,111010000}     &                      & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, МДК\\ \hline
+            \NumberHi{11}{,111010000}   & \Number{0,00101} & Получить модуль мантиссы для представления в ПК! \\ \hline
+            \NumberHi{00}{,000110000}   & \Number{0,00101} & Нормализовать модуль! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                                   $\OrderOf{R}\gets\OrderOf{R}-1$ \\ 
+            \NumberHi{00}{,001100000}   & \Number{0,00100} & Нормализовать модуль! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                                   $\OrderOf{R}\gets\OrderOf{R}-1$ \\
+            \NumberHi{00}{,011000000}   & \Number{0,00011} & Нормализовать модуль! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                                   $\OrderOf{R}\gets\OrderOf{R}-1$ \\ \hline
+            \Number{1,110000000}        & \Number{0,00010} & Рез-т!
+        \end{tabular}
+    }
+    \[
+        \FloatMyHex{1}{110000000}{0}{00010}
+    \]
+\end{frame}
+    
+
+\begin{frame}
+    \frametitle{-2+{-2}}
+
+    \begin{center}
+        \FloatMyHex{1}{100000000}{0}{00010} +
+        \FloatMyHex{1}{100000000}{0}{00010} 
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                      & \multicolumn{1}{|c|}{$\Order$}
+                                                              & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{1,100000000}      & \Number{0,00010}      & $X=-2$, ПК\\ 
+            \Number{1,100000000}      & \Number{0,00010}      & $Y=-2$, ПК\\ \hline
+                                      & \Addition{00,00010}
+                                                 {11,11110}
+                                                 {00,00000}   & $\OrderOf{X}-\OrderOf{Y} = 0$, порядки одинаковы \\ \hline
+            \Addition{11,100000000}
+                     {11,100000000}
+                     {11,000000000}   &                       & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, МДК\\ \hline
+            \NumberHi{11}{,000000000} & \Number{0,00010}      & Получить модуль мантиссы для представления в ПК! \\ \hline
+            \NumberHi{01}{,000000000} & \Number{0,00010}      & Нормализовать модуль! $\MantissOf{R}\gets \MantissOf{R}\gg 1$; 
+                                                                                      $\OrderOf{R}\gets\OrderOf{R}+1$ \\ \hline
+            \Number{1,100000000}      & \Number{0,00011}      & Рез-т!
+        \end{tabular}
+    }
+    \[
+        \FloatMyHex{1}{100000000}{0}{00011}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{ПРС (переполнение разрядной сетки)}
+
+    \begin{center}
+        \FloatMyHex{0}{111100000}{0}{11111} +
+        \FloatMyHex{0}{110000000}{0}{11101} 
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                      & \multicolumn{1}{|c|}{$\Order$}
+                                                              & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,111100000}      & \Number{0,11111}      & $X$, ПК\\ 
+            \Number{0,110000000}      & \Number{0,11101}      & $Y$, ПК\\ \hline
+                                      & \Addition{00,11111}
+                                                 {11,00011}
+                                                 {00,00010}   & $\OrderOf{X}-\OrderOf{Y} \ge 0$, МДК, денормализуется $\MantissOf{Y}$ \\ \hline
+            \Number{0,001100000}      & \Number{0,11111}      & $Y'$, денормализованное\\ \hline
+            \Addition{00,111100000}   
+                     {00,001100000}   
+                     {01,001000000}   &                       & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, МДК, ПРС мантиссы!\\ \hline
+            \NumberHi{01}{,001000000} & \Number{0,11111} & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\gg 1$; 
+                                                                          $\OrderOf{R}\gets\OrderOf{R}+1$ \\ \hline
+            \NumberHi{00}{,100100000} & \Number{?,?????} & ПРС порядка --- настоящий ПРС в формате с ПЗ!
+        \end{tabular}
+    }
+    
+    \begin{center}
+        Генерация ошибки вычислений!
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{ПМР (потеря младщих разрядов)}
+
+    \begin{center}
+        \FloatMyHex{0}{100001000}{1}{11110} +
+        \FloatMyHex{1}{111100000}{1}{11111} 
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                    & \multicolumn{1}{|c|}{$\Order$}
+                                                            & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,100001000}    & \Number{1,11110}      & $X$, ПК\\ 
+            \Number{1,111100000}    & \Number{1,11111}      & $Y$, ПК\\ \hline
+                                    & \Addition{11,00010}
+                                               {00,11111}
+                                               {00,00001}   & $\OrderOf{X}-\OrderOf{Y} \ge 0$, МДК, денормализуется $\MantissOf{Y}$ \\ \hline
+            \Number{1,011110000}    & \Number{1,11110}      & $Y'$, денормализованное \\ \hline
+            \Addition{00,100001000}
+                     {11,100010000}
+                     {00,000011000}   &                     & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, МДК \\ \hline
+            \NumberHi{00}{,000011000} & \Number{1,11110} & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                          $\OrderOf{R}\gets\OrderOf{R}-1$ \\
+            \NumberHi{00}{,000110000} & \Number{1,11111} & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                          $\OrderOf{R}\gets\OrderOf{R}-1$ \\
+            \NumberHi{00}{,001100000} & \Number{?,?????} & $\OrderOf{R}$ за пределом представления \emph{отрицательных} чисел в ПК! \\
+        \end{tabular}
+    }
+    
+    \[
+        \FloatMyHex{0}{000000000}{0}{00000}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{$X+Y=X, Y\neq 0$ ?}
+
+    \begin{center}
+        \FloatMyHex{0}{111000000}{0}{11000} +
+        \FloatMyHex{0}{110000000}{0}{01110} 
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                     & \multicolumn{1}{|c|}{$\Order$}
+                                                           & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,111000000}     & \Number{0,11000}    & $X=7\cdot 2^{21}$, ПК\\ 
+            \Number{0,110000000}     & \Number{0,01110}    & $Y=3\cdot 2^{12}$, ПК\\ \hline
+                                     & \Addition{00,11000}
+                                                {11,10010}
+                                                {00,01010} & $|\OrderOf{X}-\OrderOf{Y}| \ge 9$, МДК, $\MantissOf{Y}$ денормализуется в 0 
+            \\ \hline
+            \Number{0,000000000} & \Number{0,11000} & $Y'=0$?
+        \end{tabular}
+    }
+    
+    \begin{center}
+        \FloatMyHex{0}{111000000}{0}{11000} 
+    \end{center}
+\end{frame}
+
+    
+\section{Характеристика}
+
+
+\begin{frame}
+    \frametitle{Характеристика}
+
+    \[
+        X = \FloatExpression{X}{2}.
+    \]
+    
+    Диапазон представления порядка $\OrderOf{X}$ в $n$-разрядной сетке будет\footnote{Если использовать дополнительный код}:
+    \[
+        \OrderOf{X}\in[-2^{n-1}, +(2^{n-1}-1)]
+    \]
+    
+    Характеристика получается из порядка прибавлением фиксированной поправки $\Delta$, такой, что левая граница представления обращается в ноль. Таким образом, 
+    \begin{block}{}
+        характеристика $\CharOf{X}$ --- всегда положительное число.
+        \begin{equation}
+            \CharOf{X} = \OrderOf{X} + \Delta,
+            \label{add:fpt:char}
+        \end{equation}
+        где\footnote{Опять же только в случае использования дополнительного кода} $\Delta=+2^{n-1}$, а $\CharOf{X}\in[0,2^n-1]$.
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Свойства $n$-разрядной характеристики}
+
+    \begin{itemize}
+        \item Характеристика --- положительное число.
+        \item Разность характеристик равна разности порядков.
+        \item Если в процессе нормализации (или денормализации) порядок увеличивается (или уменьшается), то то же самое происходит и с характеристикой.
+        \item Если для работы с характеристиками использовать ДК или МДК, о ПРС при нормализации легко судить по знаковому разряду: он не должен быть 1.
+        \item Если использвется поправка $\Delta=2^{n-1}$, то характеристика получается из дополнительного кода порядка инверсией знакового разряда.
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Примеры представления}
+
+
+\begin{frame}
+    \frametitle{Формат для примеров}
+
+    \[
+        \FloatMyCharHex{X}{XXXXXXXXX}{XXXXXX}
+    \]
+    \begin{itemize}
+        \item Разряды нормализованной мантиссы в прямом коде хранятся в разрядах $[15:6]$.
+        \item Характеристика хранится в разрядах $[5:0]$.
+        \item $\Delta=2^5=32=(100000)_2$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Целое, без потерь}
+    \framesubtitle{$\Delta=2^5=32$}
+    \[
+        -9=(-1001)_2=(-.1001)\cdot 2^{4}
+    \]
+    
+    \[
+        \FloatMyCharHex{1}{100100000}{100100}
+    \]
+    
+    \[
+        (-.100100000)_2\cdot 2^{36-\Delta}=-9
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Целое, с потерями}
+    \framesubtitle{$\Delta=2^5=32$}
+    \[
+        999=(1111100111)_2=(.1111100111)\cdot 2^{10}
+    \]
+    
+    \[
+        \FloatMyCharHex{0}{111110011}{101010}
+    \]
+    
+    \[
+        (.111110011)_2\cdot 2^{42-\Delta}=\fbox{998}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Дробное, без потерь}
+    \framesubtitle{$\Delta=2^5=32$}
+    \[
+        0.171875=(0.001011)_2=(.1011)\cdot 2^{-2}
+    \]
+    
+    \[
+        \FloatMyCharHex{0}{101100000}{011110}
+    \]
+    
+    \[
+        (.101100000)_2\cdot 2^{30-\Delta}=0,171875
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Дробное, с потерями}
+    \framesubtitle{$\Delta=2^5=32$}
+    \[
+        -0.2=(-0.[0011])_2=(-.[1100])\cdot 2^{-2}
+    \]
+    
+    \[
+        \FloatMyCharHex{1}{110011001}{011110}
+    \]
+    
+    \[
+        (-.110011001)_2\cdot 2^{30-\Delta}=\fbox{-0.19970703125}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Ноль}
+    
+    \[
+        \FloatMyCharHex{0}{000000000}{000000}
+    \]
+\end{frame}
+
+
+\subsection{Правила сложения}
+
+
+\begin{frame}
+    \frametitle{Правила}
+    \framesubtitle{Исходя из формулы \eqref{add:fpt:char}, почти не меняются}
+
+    \[
+        X+Y=
+            \MantissOf{X}\cdot 2^{\CharOf{X}-\Delta}+
+            \MantissOf{Y}\cdot 2^{\CharOf{Y}-\Delta}
+    \]
+        
+    \begin{enumerate}
+        \item Характеристики чисел выравниваются до большей, мантисса числа с меньшей характеристикой сдвигается вправо на модуль разности характеристик.
+        \[
+            \begin{cases}
+                (\CharOf{X}-\CharOf{Y}) \ge 0, & \MantissOf{Y}'\gets(\MantissOf{Y}\gg |\CharOf{X}-\CharOf{Y}|), \MantissOf{X}'\gets\MantissOf{X},\\
+                (\CharOf{X}-\CharOf{Y}) < 0,   & \MantissOf{X}'\gets(\MantissOf{X}\gg |\CharOf{X}-\CharOf{Y}|), \MantissOf{Y}'\gets\MantissOf{Y}.
+            \end{cases}
+        \]
+        
+        \item Получившиеся мантиссы складываются $\MantissOf{R}=\MantissOf{X}'+\MantissOf{Y}'$. При этом характеристика результата: $\CharOf{R}=\max(\CharOf{X}, \CharOf{Y})$.
+        
+        \item Выполняется нормализация результата, если он получился не нормализованым.
+    \end{enumerate}
+\end{frame}
+
+
+\subsection{Примеры сложения}
+
+
+\begin{frame}
+    \frametitle{13+57}
+
+    \begin{center}
+        \FloatMyCharHex{0}{110100000}{100100} +
+        \FloatMyCharHex{0}{111001000}{100110}
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Char$}
+                                                               & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,110100000}        & \Number{100100}      & $X=13$\\ 
+            \Number{0,111001000}        & \Number{100110}      & $Y=57$\\ \hline
+                                        & \Addition{0,100100}
+                                                   {1,011010}
+                                                   {1,111110}  & $\CharOf{X}-\CharOf{Y} < 0$, ДК, денормализуется $\MantissOf{X}$ 
+            \\ \hline
+            \Number{0,001101000}        & \Number{0,100110}    & $X'$, денормализованное \\ \hline
+            \Addition{00,001101000}     
+                     {00,111001000}     
+                     {01,000110000}     &                      & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, в МДК, ПРС!\\ \hline
+            \NumberHi{01}{,000110000}   & \Number{0,100111}    & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\gg 1$; 
+                                                                                $\CharOf{R}\gets\CharOf{R}+1$ 
+                                                                                \\ \hline
+            \Number{0,100011000}        & \Number{100111}      & Рез-т!
+        \end{tabular}
+    }
+    \[
+        \FloatMyCharHex{0}{100011000}{100111}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{-17+14}
+
+    \begin{center}
+        \FloatMyCharHex{1}{100010000}{100101} +
+        \FloatMyCharHex{0}{111000000}{100100} 
+    \end{center}
+    
+    \resizebox{!}{.6\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Char$}
+                                                              & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{1,100010000}        & \Number{100101}     & $X=-17$\\ 
+            \Number{0,111000000}        & \Number{100100}     & $Y=14$\\ \hline
+                                        & \Addition{0,100101} 
+                                                   {1,011100} 
+                                                   {0,000001} & $\CharOf{X}-\CharOf{Y} \ge 0$, ДК, денормализуется $\MantissOf{Y}$ 
+            \\ \hline
+            \Number{0,011100000}        & \Number{0,100101} & $Y'$, денормализованное \\ \hline
+            \Addition{11,011110000} 
+                     {00,011100000} 
+                     {11,111010000}     &                   & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, МДК\\ \hline
+            \NumberHi{11}{,111010000}   & \Number{0,100101} & Получить модуль мантиссы для представления в ПК! \\ \hline
+            \NumberHi{00}{,000110000}   & \Number{0,100101} & Нормализовать модуль! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                                    $\CharOf{R}\gets\CharOf{R}-1$ \\ 
+            \NumberHi{00}{,001100000}   & \Number{0,100100} & Нормализовать модуль! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                                    $\CharOf{R}\gets\CharOf{R}-1$ \\
+            \NumberHi{00}{,011000000}   & \Number{0,100011} & Нормализовать модуль! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                                    $\CharOf{R}\gets\CharOf{R}-1$ 
+            \\ \hline
+            \Number{1,110000000}        & \Number{100010} & Рез-т!
+        \end{tabular}
+    }
+    \[
+        \FloatMyCharHex{1}{110000000}{100010}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{ПРС (переполнение разрядной сетки)}
+
+    \begin{center}
+        \FloatMyCharHex{0}{111100000}{111111} +
+        \FloatMyCharHex{0}{110000000}{111101} 
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                      & \multicolumn{1}{|c|}{$\Char$}
+                                                             & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,111100000}      & \Number{111111}      & $X$\\ 
+            \Number{0,110000000}      & \Number{111101}      & $Y$\\ \hline
+                                      & \Addition{0,111111}
+                                                 {1,000011}
+                                                 {0,000010}  & $\CharOf{X}-\CharOf{Y} \ge 0$, ДК, денормализуется $\MantissOf{Y}$ \\ \hline
+            \Number{0,001100000}      & \Number{0,111111}    & $Y'$, денормализованное\\ \hline
+            \Addition{00,111100000}   
+                     {00,001100000}   
+                     {01,001000000}   &                       & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, МДК, ПРС мантиссы!\\ \hline
+            \NumberHi{01}{,001000000} & \Number{0,111111}     & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\gg 1$; 
+                                                                               $\CharOf{R}\gets\CharOf{R}+1$ \\ \hline
+            \NumberHi{00}{,100100000} & \NumberHi{1}{,000000} & $\CharOf{R} < 0$, выход за правую границу представления --- ПРС!
+        \end{tabular}
+    }
+    
+    \begin{center}
+        Генерация ошибки вычислений!
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{ПМР (потеря младщих разрядов)}
+
+    \begin{center}
+        \FloatMyCharHex{0}{100001000}{000010} +
+        \FloatMyCharHex{1}{111100000}{000001} 
+    \end{center}
+    
+    \resizebox{!}{.7\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                      & \multicolumn{1}{|c|}{$\Char$}
+                                                            & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,100001000}      & \Number{000010}     & $X$\\ 
+            \Number{1,111100000}      & \Number{000001}     & $Y$\\ \hline
+                                      & \Addition{0,000010}
+                                                 {1,111111}
+                                                 {0,000001} & $\CharOf{X}-\CharOf{Y} \ge 0$, МДК, денормализуется $\MantissOf{Y}$ \\ \hline
+            \Number{1,011110000}      & \Number{0,000010}   & $Y'$, денормализованное \\ \hline
+            \Addition{00,100001000}
+                     {11,100010000}
+                     {00,000011000}   &                     & $\MantissOf{R} = \MantissOf{X}'+\MantissOf{Y}'$, МДК \\ \hline
+            \NumberHi{00}{,000011000} & \Number{0,000010} & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                           $\CharOf{R}\gets\CharOf{R}-1$ \\
+            \NumberHi{00}{,000110000} & \Number{0,000001} & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                           $\CharOf{R}\gets\CharOf{R}-1$ \\
+            \NumberHi{00}{,001100000} & \Number{0,000000} & Нормализовать! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                           $\CharOf{R}\gets\CharOf{R}-1$ \\
+            \NumberHi{00}{,011000000} & \NumberHi{1}{,111111} & $\CharOf{R} < 0$, выход за левую границу представления --- ПМР! \\
+        \end{tabular}
+    }
+    
+    \[
+        \FloatMyCharHex{0}{000000000}{000000}
+    \]
+\end{frame}
+
+
+\appendix
+
+
+\section{Задания на практику}
+
+
+\subsection{Проходное}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Придумать правила определения ПРС/ПМР при работе 
+    \begin{itemize}
+        \item с порядками в прямом коде;
+        \item с характеристиками.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+
+    Разработать собственный 10-разрядный формат\footnote{Преподавателю: обязательно проследить, чтобы были использованы и порядки и характеристики} и сложить в нем числа:
+
+    \begin{enumerate}
+        \item $9$ и $-11$;
+        \item $10$ и $7$;
+        \item $0.625$ и $0.75$;
+        \item $-0.625$ и $0.375$.
+    \end{enumerate}
+\end{frame}
+
+\subsection{Мегамозг}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Придумать пример из последовательности трех чисел, сумма которых зависимсит от порядка суммирования. 
+\end{frame}
+
+\section{Самообучение}
+
+\begin{frame}
+    \frametitle{Советы самоучке}
+    
+    Стандарт на формат с плавающей точкой IEEE 754.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Библиография}
+    \bibliographystyle{gost780u}
+    \bibliography{./../../../bibliobase}
+\end{frame}
+
+\end{document}

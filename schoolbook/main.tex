@@ -1,0 +1,85 @@
+\documentclass[a4paper,oneside,14pt]{scrbook}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage[russian]{babel}
+\usepackage{indentfirst}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage{graphicx}
+\usepackage[all]{xy}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{ifthen}
+\usepackage{mflogo}
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+%пометка черновика (закомментировать три строки ниже для релиза)
+\usepackage{draftwatermark}
+\SetWatermarkScale{1.5}
+\SetWatermarkText{$\beta$-версия от \today}
+
+\title{Арифметические основы вычислительной техники и элементы микропрограммного управления}
+\author{\fbox{Т.~Р.~Фадеева}, Л.~И.~Матвеева, М.~М.~Шихов}
+\date{\today}
+
+\newtheorem{Example}{Пример}[chapter]
+\newtheorem{Theorem}{Теорема}[chapter]
+\newtheorem{Rule}{Правило}[chapter]
+\newtheorem{Note}{Заметка}[chapter]
+
+%для рисования графов пакетом xy-pic
+\entrymodifiers={++[o][F-]}
+
+%для псевдокода алгоритмов (algorithm,algorithmic)
+\renewcommand{\algorithmicrequire}{\textbf{Вход:}}
+\renewcommand{\algorithmicensure}{\textbf{Выход:}}
+\renewcommand{\algorithmiccomment}[1]{// #1}
+\floatname{algorithm}{Псевдокод}
+
+\input{newcommand}
+
+\begin{document}
+
+    \maketitle
+    \tableofcontents
+
+    \chapter*{Введение}
+    \addcontentsline{toc}{chapter}{Введение}
+    
+    Информатика --- это дисциплина, посвящённая автоматизации процесса обработки (хранения и передачи) информации. Т.е. \emph{информатика} рождается в тот момент, когда для обработки \emph{информации} применяется \emph{автоматика}.
+    
+    В данном пособии информация рассматривается как структурированная последовательность бит, а вычисления сводятся к обработке информационных представлений чисел.
+    
+    У обучающегося формируются знания, умения и навыки в следующих областях: системы счисления, форматы представления чисел, методы вычислений. Каждая тема сопровождается достаточным количеством примеров. 
+    
+    Для успешного освоения курса студент должен обладать базовыми знаниями в рамках курса дискретной математики. Знания, полученные в ходе освоения данного курса необходимы для последующего изучения завершающих обучение профильных дисциплин: математическая логика и теория алгоритмов, программирование, теория автоматов, схемотехника, исследование операций, проектирование ЭВМ, технология программирования, защита информации.
+    
+    Для углубленного изучения авторы рекомендуют \cite{bib:lisikov:automateBase,bib:saveliev:automateTheory}
+    
+    \input{ch-digit-format} %форматы чисел
+    \input{ch-add}          %сложение двоичных чисел
+    \input{ch-mult}         %умножение двоичных чисел
+    \input{ch-div}          %деление двоичных чисел
+    \input{ch-bcd}          %сложение в двоично-десятичной системе
+    \input{ch-practice}     %практикум
+    \input{ch-risc}         %RISC - установка
+    \input{ch-coursework}   %курсовая работа
+    \input{short-list}      %список сокращений
+    
+    \chapter*{В заключение}
+    \addcontentsline{toc}{chapter}{В заключение}
+
+    Данный текст подготовлен в издательской системе {\LaTeXe} (авторы использовали MiC\TeX.). Эта издательская система является стандартом де факто в научных и технических кругах. Для иллюстраций были использованы свободные редакторы векторной графики, свободный пакет \Xy-pic, а также программа \MP.
+
+    Заинтересовавшимся версткой в {\LaTeX} можно рекомендовать следующие книги: \cite{bib:cotelnikov,bib:baldin,bib:lvovsky}. 
+    Про предшественника {\LaTeX} --- программу {\TeX} следует читать бестселлер от автора\footnote{{\TeX} на самом деле является ядром \LaTeX} \cite{bib:knuth:AllAbout}. Работа в {\MP} раскрыта в руководстве пользователя автором системы Джоном Хобби \cite{bib:hobby:metapostman}, а основы работы изложены в статье Троя Хендерсона \cite{bib:henderson:metapostguide}.
+    
+    \bibliographystyle{gost780u}
+    \bibliography{./../bibliobase}
+
+\end{document} %конец документа

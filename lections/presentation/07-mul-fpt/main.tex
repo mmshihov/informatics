@@ -1,0 +1,478 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[Умножение в ПЗ]{Умножение в формате с плавающей точкой}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+\begin{frame}<presentation>
+    \frametitle{Содержание}
+    \tableofcontents
+\end{frame}
+
+
+
+\begin{frame}
+    \frametitle{Формат с плавающей точкой}
+    
+    \[
+        X = \FloatExpression{X}{2},
+    \]
+    где $\MantissOf{X}$ --- нормализованная мантисса числа $X$, $\OrderOf{X}$ --- порядок числа $X$, подобранный так, чтобы $\MantissOf{X}$ была нормализованной.
+    \begin{block}{Правила нормализации $X\neq 0$}
+        Мантисса $\MantissOf{X}$ получается из двоичного представления $X$ переносом точки в такую позицию, чтобы целая часть была равна нулю, а в старшем разряде дробной части была единица:
+        \[(0.\underbrace{1xxx\cdots xxx}_{\text{\tiny{разряды мантиссы}}})_2\]
+        порядок $\OrderOf{X}$ определяет на сколько разрядов нужно передвинуть запятую в мантиссе, чтобы получить исходное число.
+    \end{block}
+\end{frame}
+
+
+\section{Порядок}
+
+
+\begin{frame}
+    \frametitle{Формат для примеров}
+
+    \[
+        \FloatMyHex{X}{XXXXXXXXX}{X}{XXXXX}
+    \]
+    \begin{itemize}
+        \item Разряды нормализованной мантиссы в прямом коде хранятся в разрядах $[15:6]$.
+        \item Порядок в прямом коде хранится в разрядах $[5:0]$.
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Правила умножения в формате}
+
+
+\begin{frame}
+    \frametitle{Правила умножения}
+
+    \[R=X\cdot Y=\FloatExpression{X}{2}\cdot\FloatExpression{Y}{2}=(\MantissOf{X}\cdot\MantissOf{Y})\cdot 2^{(\OrderOf{X}+\OrderOf{Y})}.\]
+        
+    \begin{enumerate}
+        \item Порядок результата определяется сложением порядков операндов: $\OrderOf{R}\gets\OrderOf{X}+\OrderOf{Y}$.  
+        \item Мантисса результата определяется перемножением мантисс операндов по правилам умножения чисел с фиксированной запятой: $\MantissOf{R}\gets\MantissOf{X}\cdot\MantissOf{Y}$.
+        \item Выполняется нормализация результата, если он получился не нормализованым.
+        \item Фиксируется результат, или ситуации ПРС/ПМР.
+    \end{enumerate}
+\end{frame}
+
+
+\subsection{Примеры умножения}
+
+
+\begin{frame}
+    \frametitle{$37\cdot 86=3182$}
+
+    \begin{center}
+        \FloatMyHex{0}{100101000}{0}{00110} $\times$
+        \FloatMyHex{0}{101011000}{0}{00111}
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Order$}
+                                                                & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,100101000}        & \Number{0,00110}      & $X=37$, ПК\\ 
+            \Number{0,101011000}        & \Number{0,00111}      & $Y=86$, ПК\\ \hline
+                                        & \Addition{00,00110}
+                                                   {00,00111}
+                                                   {00,01101}   & сложение порядков в МДК \\ \hline
+            \Multiplication{0,100101000}     
+                           {0,101011000}     
+                           {0,011000110 111000000}     
+                                        &                       & $\MantissOf{R} = \MantissOf{X}\cdot\MantissOf{Y}$, ненормализованная \\ \hline
+            \Number{0,011000110 111000000}   
+                                        & \Number{00,01101}     & Нормализация! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                                 $\OrderOf{R}\gets\OrderOf{R}-1$ \\ \hline
+            \Number{0,110001101}        & \Number{0,01100}      & Рез-т!
+        \end{tabular}
+    }
+    \[
+        \FloatMyHex{0}{110001101}{0}{01100}
+    \]
+    $37\cdot 86\approx 3176$. $\Delta = 6, \delta\approx 0,00189$
+\end{frame}
+
+\begin{frame}
+    \frametitle{ПРС}
+
+    \begin{center}
+        \FloatMyHex{1}{110000000}{0}{11000} $\times$
+        \FloatMyHex{0}{110000000}{0}{10000}
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Order$}
+                                                                & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{1,110000000}        & \Number{0,11000}      & $X$, ПК\\ 
+            \Number{0,110000000}        & \Number{0,10000}      & $Y$, ПК\\ \hline
+                                        & \Addition{00,11000}
+                                                   {00,10000}
+                                                   {01,01000}   & Сложение в МДК. ПРС порядков \\ \hline
+            \Multiplication{1,110000000}     
+                           {0,110000000}     
+                           {1,100100000 000000000}     
+                                        &                       & $\MantissOf{R} = \MantissOf{X}\cdot\MantissOf{Y}$, нормализованная \\ \hline
+            \Number{1,100100000 000000000}   
+                                        & \Number{01,01000}     & ПРС! Слишком большой порядок.
+        \end{tabular}
+    }
+
+    Ошибка вычислений --- ПРС формата с плавающей запятой.
+\end{frame}
+    
+
+\begin{frame}
+    \frametitle{Устранимое ПРС}
+
+    \begin{center}
+        \FloatMyHex{1}{100000000}{0}{11000} $\times$
+        \FloatMyHex{1}{100000000}{0}{01000}
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Order$}
+                                                                & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{1,100000000}        & \Number{0,11000}      & $X$, ПК\\ 
+            \Number{1,100000000}        & \Number{0,10000}      & $Y$, ПК\\ \hline
+                                        & \Addition{00,11000}
+                                                   {00,01000}
+                                                   {01,00000}   & Сложение в МДК. ПРС порядков? \\ \hline
+            \Multiplication{1,100000000}     
+                           {1,100000000}     
+                           {0,010000000 000000000}     
+                                        &                       & $\MantissOf{R} = \MantissOf{X}\cdot\MantissOf{Y}$, ненормализованная \\ \hline
+            \Number{0,010000000 000000000}   
+                                        & \Number{01,00000}     & Нормализация! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                                 $\OrderOf{R}\gets\OrderOf{R}-1$ \\ \hline
+            \Number{0,100000000 000000000}   
+                                        & \Number{00,11111}     & ПРС нет! \\ \hline
+            \Number{0,100000000}        & \Number{0,11111}      & Рез-т!
+        \end{tabular}
+    }
+    \[
+        \FloatMyHex{0}{100000000}{0}{11111}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{ПМР}
+
+    \begin{center}
+        \FloatMyHex{1}{100000000}{1}{11000} $\times$
+        \FloatMyHex{0}{100000000}{1}{01100}
+    \end{center}
+    
+    \resizebox{!}{.75\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Order$}
+                                                                & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{1,100000000}        & \Number{1,11000}      & $X$, ПК\\ 
+            \Number{0,100000000}        & \Number{1,01100}      & $Y$, ПК\\ \hline
+                                        & \Addition{11,01000}
+                                                   {11,10100}
+                                                   {10,11100}   & Сложение в МДК. ПРС порядков <<в минус>>. \\ 
+        \end{tabular}
+    }
+    
+    ПМР не устряняется!
+    \[
+        \FloatMyHex{0}{000000000}{0}{00000}
+    \]
+\end{frame}
+
+    
+\section{Характеристика}
+
+
+\begin{frame}
+    \frametitle{Характеристика}
+
+    \[
+        X = \FloatExpression{X}{2}.
+    \]
+    
+    Диапазон представления порядка $\OrderOf{X}$ в $n$-разрядной сетке будет\footnote{Если использовать дополнительный код}:
+    \[
+        \OrderOf{X}\in[-2^{n-1}, +(2^{n-1}-1)]
+    \]
+    
+    Характеристика получается из порядка прибавлением фиксированной поправки $\Delta$, такой, что левая граница представления обращается в ноль. Таким образом, 
+    \begin{block}{}
+        характеристика $\CharOf{X}$ --- всегда положительное число.
+        \begin{equation}
+            \CharOf{X} = \OrderOf{X} + \Delta,
+            \label{add:fpt:char}
+        \end{equation}
+        где\footnote{Опять же только в случае использования дополнительного кода} $\Delta=+2^{n-1}$, а $\CharOf{X}\in[0,2^n-1]$.
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Свойства $n$-разрядной характеристики}
+
+    \begin{itemize}
+        \item Характеристика --- положительное число.
+        \item Разность характеристик равна разности порядков.
+        \item Если в процессе нормализации (или денормализации) порядок увеличивается (или уменьшается), то то же самое происходит и с характеристикой.
+        \item Если для работы с характеристиками использовать ДК или МДК, о ПРС при нормализации легко судить по знаковому разряду: он не должен быть 1.
+        \item Если использвется поправка $\Delta=2^{n-1}$, то характеристика получается из дополнительного кода порядка инверсией знакового разряда.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Формат для примеров}
+
+    \[
+        \FloatMyCharHex{X}{XXXXXXXXX}{XXXXXX}
+    \]
+    \begin{itemize}
+        \item Разряды нормализованной мантиссы в прямом коде хранятся в разрядах $[15:6]$.
+        \item Характеристика хранится в разрядах $[5:0]$.
+        \item $\Delta=2^5=32=(100000)_2$
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Правила умножения}
+
+
+\begin{frame}
+    \frametitle{Правила умножения}
+
+    \[
+        R=X\cdot Y=
+            \MantissOf{X}\cdot 2^{\CharOf{X}-\Delta}\cdot
+            \MantissOf{Y}\cdot 2^{\CharOf{Y}-\Delta}=
+            (\MantissOf{X}\cdot\MantissOf{Y})\cdot 2^{\CharOf{X} + \CharOf{Y}-2\Delta}
+    \]
+        
+    \begin{enumerate}
+        \item Хаарактеристика результата определяется по формуле: $\CharOf{R}\gets(\CharOf{X}+\CharOf{Y}-\Delta)$.  
+        \item Мантисса результата определяется перемножением мантисс операндов по правилам умножения чисел с фиксированной запятой: $\MantissOf{R}\gets\MantissOf{X}\cdot\MantissOf{Y}$.
+        \item Выполняется нормализация результата, если он получился не нормализованым.
+        \item Фиксируется результат, или ситуации ПРС/ПМР.
+    \end{enumerate}
+\end{frame}
+
+
+\subsection{Примеры умножения}
+
+
+\begin{frame}
+    \frametitle{$2.5\cdot 6=15$}
+
+    \begin{center}
+        \FloatMyCharHex{0}{101000000}{100010} $\times$
+        \FloatMyCharHex{0}{110000000}{100011}
+    \end{center}
+    
+    
+    \resizebox{!}{.7\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Char$}
+                                                               & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,101000000}        & \Number{100010}      & $X=2.5$, ПК\\ 
+            \Number{0,110000000}        & \Number{100011}      & $Y=6$, ПК\\ \hline
+                                        & \Addition{00,100010}
+                                                   {00,100011}
+                                                   {01,000101}  & $(\CharOf{X}+\CharOf{Y})$ в МДК \\ \hline
+                                        & \Addition{01,000101} 
+                                                   {11,100000} 
+                                                   {00,100101}  & $(\CharOf{X}+\CharOf{Y}-\Delta)$ в МДК \\ \hline
+            \Multiplication{0,101000000}                       
+                           {0,110000000}                       
+                           {0,011110000 000000000}             
+                                        &                      & $\MantissOf{R} = \MantissOf{X}\cdot\MantissOf{Y}$, ненормализованная \\ \hline
+            \Number{0,011110000 000000000}                     
+                                        & \Number{00,100101}   & Нормализация! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; 
+                                                                               $\CharOf{R}\gets \CharOf{R}-1$; \\ \hline
+            \Number{0,111100000}        & \Number{100100}      & Рез-т!
+        \end{tabular}
+    }
+    \[
+        \FloatMyCharHex{0}{111100000}{100100}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{ПРС}
+
+    \begin{center}
+        \FloatMyCharHex{0}{100000000}{111000} $\times$
+        \FloatMyCharHex{0}{100000000}{101100}
+    \end{center}
+    
+    
+    \resizebox{!}{.7\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Char$}
+                                                               & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,100000000}        & \Number{111000}      & $X=0.5\cdot 2^{56-32}$, ПК\\ 
+            \Number{0,100000000}        & \Number{101100}      & $Y=0.5\cdot 2^{44-32}$, ПК\\ \hline
+                                        & \Addition{00,111000}
+                                                   {00,101100}
+                                                   {01,100100}  & $(\CharOf{X}+\CharOf{Y})$ в МДК \\ \hline
+                                        & \Addition{01,100100} 
+                                                   {11,100000} 
+                                                   {01,000100}  & $(\CharOf{X}+\CharOf{Y}-\Delta)$ в МДК, ПРС \\ \hline
+            \Multiplication{0,100000000}                       
+                           {0,100000000}                       
+                           {0,010000000 000000000}             
+                                        &                      & $\MantissOf{R} = \MantissOf{X}\cdot\MantissOf{Y}$, ненормализованная \\ \hline
+            \Number{0,010000000 000000000}                     
+                                        & \Number{01,000100}   & Нормализация! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; $\CharOf{R}\gets \CharOf{R}-1$; \\ \hline
+            \Number{0,100000000 000000000}                     
+                                        & \Number{01,000011}   & ПРС! Слишком большой порядок. \\ \hline
+        \end{tabular}
+    }
+    
+    Ошибка вычислений --- ПРС формата с плавающей запятой.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Устранимое ПРС}
+
+    \begin{center}
+        \FloatMyCharHex{0}{100000000}{111000} $\times$
+        \FloatMyCharHex{0}{100000000}{101000}
+    \end{center}
+    
+    
+    \resizebox{!}{.67\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Char$}
+                                                               & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,100000000}        & \Number{111000}      & $X=0.5\cdot 2^{56-32}$, ПК\\ 
+            \Number{0,100000000}        & \Number{101000}      & $Y=0.5\cdot 2^{40-32}$, ПК\\ \hline
+                                        & \Addition{00,111000}
+                                                   {00,101000}
+                                                   {01,100000}  & $(\CharOf{X}+\CharOf{Y})$ в МДК \\ \hline
+                                        & \Addition{01,100000} 
+                                                   {11,100000} 
+                                                   {01,000000}  & $(\CharOf{X}+\CharOf{Y}-\Delta)$ в МДК, ПРС \\ \hline
+            \Multiplication{0,100000000}                       
+                           {0,100000000}                       
+                           {0,010000000 000000000}             
+                                        &                      & $\MantissOf{R} = \MantissOf{X}\cdot\MantissOf{Y}$, ненормализованная \\ \hline
+            \Number{0,010000000 000000000}                     
+                                        & \Number{01,000000}   & Нормализация! $\MantissOf{R}\gets \MantissOf{R}\ll 1$; $\CharOf{R}\gets \CharOf{R}-1$; \\ \hline
+            \Number{0,100000000 000000000}                     
+                                        & \Number{00,111111}   & ПРС устраняется.  \\ \hline
+            \Number{0,100000000}                     
+                                        & \Number{111111}      & $R=0.5\cdot 2^{63-32}$  \\ \hline
+        \end{tabular}
+    }
+    \[
+        \FloatMyCharHex{0}{100000000}{111111}
+    \]
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{ПМР}
+
+    \begin{center}
+        \FloatMyCharHex{0}{100000000}{000001} $\times$
+        \FloatMyCharHex{0}{100000000}{011110}
+    \end{center}
+    
+    
+    \resizebox{!}{.86\height}{
+        \begin{tabular}{r|r|l}
+            \multicolumn{1}{c|}{$\Mantiss$}
+                                        & \multicolumn{1}{|c|}{$\Char$}
+                                                               & \multicolumn{1}{|c}{прим.} \\ \hline\hline
+            \Number{0,100000000}        & \Number{111000}      & $X=0.5\cdot 2^{1-32}$, ПК\\ 
+            \Number{0,100000000}        & \Number{101000}      & $Y=0.5\cdot 2^{30-32}$, ПК\\ \hline
+                                        & \Addition{00,000001}
+                                                   {00,011110}
+                                                   {00,011111}  & $(\CharOf{X}+\CharOf{Y})$ в МДК \\ \hline
+                                        & \Addition{00,011111} 
+                                                   {11,100000} 
+                                                   {11,111111}  & $(\CharOf{X}+\CharOf{Y}-\Delta)$ в МДК, ПРС <<в минус>>
+        \end{tabular}
+    }
+    
+    ПМР не устраняется!
+    \[
+        \FloatMyCharHex{0}{000000000}{000000}
+    \]
+\end{frame}
+
+\appendix
+
+
+\section{Задания на практику}
+
+
+\subsection{Проходное}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Придумать правила определения ПРС/ПМР при работе 
+    \begin{itemize}
+        \item с порядками в прямом коде;
+        \item с характеристиками.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+
+    Разработать собственный 10-разрядный формат\footnote{Преподавателю: обязательно проследить, чтобы были использованы и порядки и характеристики} и перемножить в нем числа:
+
+    \begin{enumerate}
+        \item $9$ и $-11$;
+        \item $10$ и $7$;
+        \item $0.625$ и $0.75$;
+        \item $-0.625$ и $0.375$.
+    \end{enumerate}
+\end{frame}
+
+\subsection{Мегамозг}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Придумать пример из последовательности трех чисел, произведение которых зависимсит от порядка перемножения. 
+\end{frame}
+
+\section{Самообучение}
+
+\begin{frame}
+    \frametitle{Советы самоучке}
+    
+    Классика жанра: \cite{bib:lisikov:automateBase}.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Библиография}
+    \bibliographystyle{gost780u}
+    \bibliography{./../../../bibliobase}
+\end{frame}
+
+\end{document}

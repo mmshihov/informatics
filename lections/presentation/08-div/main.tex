@@ -1,0 +1,1266 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[Целочисленное деление]{Целочисленное деление}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+\begin{frame}<presentation>
+    \frametitle{Содержание}
+    \tableofcontents
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Целочисленное деление}
+    
+    В результате деления числа $A$ (делимое) на число $d$ (делитель) получается частное $q$ и остаток $\Delta$, такие, что выполняется равенство:
+    \[
+        A = q \cdot d + \Delta,
+    \]
+    где $A, q, d, \Delta$ --- целые, а $|\Delta|<|d|$.
+
+    Результат деления будем записывать как $A\div d=q \Machine{ rem } \Delta$, например:
+    \[
+        7\div 3=\Machine{2 rem 1}.
+    \]
+    
+    \begin{block}{}
+        Результат целочисленного деления, как обратной умножению операции, получается серией вычитаний и сдвигов.
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Целочисленное деление (10CC), $52938\div 43$}
+    \framesubtitle{Англо-американская система}
+    
+    \begin{center}
+    \resizebox{!}{.8\height} {
+    \begin{tabular}{cccccc|c|l}
+                      &\uncover<2->{0}&\uncover<3->{1}&\uncover<4->{2}&\uncover<5->{3}&\uncover<6->{1}&        & частное\\ \hline\hline
+                      &5              &2              &9              &3              &8              &$\div43$& делимое $\div$ делитель\\ \hline\hline
+                      &\uncover<2->{5}&               &               &               &               &        & \\
+       \uncover<2->{-}&\uncover<2->{0}&               &               &               &               &        & \\
+       \uncover<2->{=}&\uncover<2->{5}&               &               &               &               &        & \uncover<2->{$\Delta_1$}\\ \hline
+                      &\uncover<3->{5}&\uncover<3->{2}&               &               &               &        & \\
+       \uncover<3->{-}&\uncover<3->{4}&\uncover<3->{3}&               &               &               &        & \\
+       \uncover<3->{=}&               &\uncover<3->{9}&               &               &               &        & \uncover<3->{$\Delta_2$}\\ \hline
+                      &               &\uncover<4->{9}&\uncover<4->{9}&               &               &        & \\
+                      &\uncover<4->{-}&\uncover<4->{8}&\uncover<4->{6}&               &               &        & \\
+                      &\uncover<4->{=}&\uncover<4->{1}&\uncover<4->{3}&               &               &        & \uncover<4->{$\Delta_3$}\\ \hline
+                      &               &\uncover<5->{1}&\uncover<5->{3}&\uncover<5->{3}&               &        & \\
+                      &\uncover<5->{-}&\uncover<5->{1}&\uncover<5->{2}&\uncover<5->{9}&               &        & \\
+                      &\uncover<5->{=}&               &               &\uncover<5->{4}&               &        & \uncover<5->{$\Delta_4$}\\ \hline
+                      &               &               &               &\uncover<6->{4}&\uncover<6->{8}&        & \\
+                      &               &               &\uncover<6->{-}&\uncover<6->{4}&\uncover<6->{3}&        & \\
+                      &               &               &\uncover<6->{=}&               &\uncover<6->{5}&        & \uncover<6->{$\Delta_5$}\\ \hline
+                      &               &               &               &               &\uncover<7->{5}&        & \uncover<7->{$52938\div 43=\Machine{1231 rem 5}$.}
+    \end{tabular}
+    }
+    \end{center}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Целочисленное деление (2CC), $10\div 3$}
+    \framesubtitle{Англо-американская система}
+    
+    \begin{center}
+    \resizebox{!}{.9\height} {
+    \begin{tabular}{ccccc|c|l}
+                       &\uncover<2->{0}&\uncover<3->{0}&\uncover<4->{1}&\uncover<5->{1}&          & частное \\ \hline\hline
+                       &1              &0              &1              &0              &$\div$11  & делимое $\div$ делитель\\ \hline\hline
+                       &\uncover<2->{1}&               &               &               &          & \\
+        \uncover<2->{-}&\uncover<2->{0}&               &               &               &          & \\ 
+        \uncover<2->{=}&\uncover<2->{1}&               &               &               &          &\uncover<2->{$\Delta_1$} \\ \hline
+                       &\uncover<3->{1}&\uncover<3->{0}&               &               &          & \\
+        \uncover<3->{-}&               &\uncover<3->{0}&               &               &          & \\ 
+        \uncover<3->{=}&\uncover<3->{1}&\uncover<3->{0}&               &               &          &\uncover<3->{$\Delta_2$} \\ \hline
+                       &\uncover<4->{1}&\uncover<4->{0}&\uncover<4->{1}&               &          & \\
+        \uncover<4->{-}&               &\uncover<4->{1}&\uncover<4->{1}&               &          & \\ 
+        \uncover<4->{=}&               &\uncover<4->{1}&\uncover<4->{0}&               &          &\uncover<4->{$\Delta_3$} \\ \hline
+                       &               &\uncover<5->{1}&\uncover<5->{0}&\uncover<5->{0}&          & \\
+                       &\uncover<5->{-}&               &\uncover<5->{1}&\uncover<5->{1}&          & \\ 
+                       &\uncover<5->{=}&               &               &\uncover<5->{1}&          &\uncover<5->{$\Delta_4$} \\ \hline
+                       &               &               &               &\uncover<6->{1}&          &\uncover<6->{$(1010)_2\div (11)_2=\Machine{$(11)_2$ rem 1}$}\\ 
+    \end{tabular}
+    }
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Беззнаковое целочисленное деление}
+    \framesubtitle{Первый способ}
+
+    \only<1> {
+        Начальное состояние:
+        \begin{center}
+            \includegraphics[width=0.85\textwidth]{fig/ibegin}
+        \end{center}
+    }
+    \only<2> {
+        Конечное состояние:
+        \begin{center}
+            \includegraphics[width=0.85\textwidth]{fig/iend}
+        \end{center}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Целочисленное деление}
+    \framesubtitle{Второй способ}
+
+    \only<1> {
+        Начальное состояние:
+        \begin{center}
+            \includegraphics[width=0.85\textwidth]{fig/iibegin}
+        \end{center}
+    }
+    \only<2> {
+        Конечное состояние:
+        \begin{center}
+            \includegraphics[width=0.85\textwidth]{fig/iiend}
+        \end{center}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{На ноль делить нельзя!}
+
+    Все приведенные ниже алгоритмы работают при условии, что не получают на входе нулевой делитель.
+\end{frame}
+
+
+\section{Беззнаковое целочисленное деление}
+
+
+\begin{frame}
+    \frametitle{Беззнаковое целочисленное деление $A\div d=q\Machine{ rem } \Delta$}
+    
+    \[
+        A = d \cdot q + \Delta,
+    \]
+    
+    В результате деления положительных чисел делимого $A$ на делитель $d$ получаемые в результате частное $q$ и остаток $\Delta$ --- также положительны. 
+\end{frame}
+
+
+\subsection{Деление с восстановлением остатков}
+
+
+\begin{frame}
+    \frametitle{Алгоритм деления с восстановлением остатков}
+    \framesubtitle{$n$-разрядные беззнаковые целые}
+
+    \begin{enumerate}
+        \item $i\gets 1$; В младшую часть регистра остатков заносится делимое, в старшую часть регистра делителя --- делитель. Далее состояние регистра остатков --- остаток ($\Delta$), регистра делителя --- делитель ($d$), регистра частного ($q$) --- частное.
+        \item\label{div:vo:start} Выполнить сдвиги: частное $q$ влево, остаток $\Delta$ влево (в первом способе), делитель $d$ вправо (во втором способе).
+        \item Получить новый остаток $\Delta\gets(\Delta - d)$;
+        \item Если $\Delta < 0$, то в младший разряд частного занести 0, иначе 1.
+        \item Если $\Delta < 0$, то выполнить восстановление старого значения остатка: $\Delta\gets(\Delta + d)$.
+        \item $i\gets (i + 1)$. Если $i\le n$, то к шагу \ref{div:vo:start}.
+        \item В регистре частного получено значение частного, в регистре остатков --- $n$-разрядный остаток (в первом способе в старших разрядах, во втором --- в младших).
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Алгоритм деления с восстановлением остатков}
+    \framesubtitle{Примечания}
+
+    \begin{itemize}
+        \item В регистр остатков и регистр делителя добавлены знаковые разряды.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление с восстановлением остатков I-й способ}
+    \framesubtitle{$46\div 5$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            \hline\hline
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{......}
+                & \Number{.,...... 101110}
+                    & \Number{.,...101}
+                        & операнды;\\ \hline\hline
+            \Number{......}
+                & \Number{.,.....1 01110.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{.....0}
+                & \Addition{.,.....1 01110.}
+                           {1,111011 ......}
+                           {1,111100 01110.}
+                    & 
+                        & $\Delta_1<0$;\\ \hline
+            \Number{.....0}
+                & \Addition{1,111100 01110.}
+                           {.,...101 ......}
+                           {.,.....1 01110.}
+                    & 
+                        & Восст. $\Delta_1$;
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление с восстановлением остатков I-й способ (2)}
+    \framesubtitle{$46\div 5$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{.....0}
+                & \Number{.,.....1 01110.}
+                    & \Number{.,...101}
+                        & $\uparrow$ \\ \hline\hline
+            \Number{....0.}
+                & \Number{.,....10 1110..}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{....00}
+                & \Addition{.,....10 1110..}
+                           {1,111011 ......}
+                           {1,111101 1110..}
+                    & 
+                        & $\Delta_2<0$;\\ \hline
+            \Number{....00}
+                & \Addition{1,111101 1110..}
+                           {.,...101 ......}
+                           {.,....10 1110..}
+                    & 
+                        & Восст. $\Delta_2$;\\ \hline
+            \Number{...00.}
+                & \Number{.,...101 110...}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{...001}
+                & \Addition{.,...101 110...}
+                           {1,111011 ......}
+                           {.,...... 110...}
+                    & 
+                        & $\Delta_3\ge 0$;\\ \hline
+            \Number{..001.}
+                & \Number{.,.....1 10....}
+                    & 
+                        & сдвиг;
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление с восстановлением остатков I-й способ (3)}
+    \framesubtitle{$46\div 5$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{..001.}
+                & \Number{.,.....1 10....}
+                    & \Number{.,...101}
+                        & $\uparrow$ \\ \hline\hline
+            \Number{..0010}
+                & \Addition{.,.....1 10....}
+                           {1,111011 ......}
+                           {1,111100 10....}
+                    & 
+                        & $\Delta_4<0$;\\ \hline
+            \Number{..0010}
+                & \Addition{1,111100 10....}
+                           {.,...101 ......}
+                           {.,.....1 10....}
+                    & 
+                        & Восст. $\Delta_4$;\\ \hline
+            \Number{.0010.}
+                & \Number{.,....11 0.....}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{.00100}
+                & \Addition{.,....11 0.....}
+                           {1,111011 ......}
+                           {1,111111 0.....}
+                    & 
+                        & $\Delta_5<0$;\\ \hline
+            \Number{.00100}
+                & \Addition{1,111111 0.....}
+                           {.,...101 ......}
+                           {.,....11 0.....}
+                    & 
+                        & Восст. $\Delta_5$;
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление с восстановлением остатков I-й способ (4)}
+    \framesubtitle{$46\div 5 = \Machine{9 rem 1}$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{.00100}
+                & \Number{.,....11 0.....}
+                    & \Number{.,...101}
+                        & $\uparrow$ \\ \hline\hline
+            \Number{00100.}
+                & \Number{.,...110 ......}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{001001}
+                & \Addition{.,...110 ......}
+                           {1,111011 ......}
+                           {.,000001 ......}
+                    & 
+                        & $\Delta_6>0$;\\ \hline
+        \end{tabular}
+    }
+    
+    \begin{align*}
+        q       &= (001001)_2 = 9\\
+        \Delta  &= (000001)_2 = 1
+    \end{align*}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Деление с восстановлением остатков II-й способ}
+    \framesubtitle{$53\div 5$}
+    
+    \resizebox{.95\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            \hline\hline
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{......}
+                & \Number{.,...... 110101}
+                    & \Number{.,...101 ......}
+                        & операнды;\\ \hline\hline
+            \Number{......}
+                & \Number{.,...... 110101}
+                    & \Number{.,....10 1.....}
+                        & сдвиг;\\ \hline
+            \Number{.....0}
+                & \Addition{.,...... 110101}
+                           {1,111101 1.....}
+                           {1,111110 010101}
+                    & 
+                        & $\Delta_1<0$;\\ \hline
+            \Number{.....0}
+                & \Addition{1,111110 010101}
+                           {.,....10 1.....}
+                           {.,...... 110101}
+                    & 
+                        & Восст. $\Delta_1$;
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление с восстановлением остатков II-й способ (2)}
+    \framesubtitle{$53\div 5$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{.....0}
+                & \Number{.,...... 110101}
+                    & \Number{.,....10 1.....}
+                        & $\uparrow$ \\ \hline\hline
+            \Number{....0.}
+                & \Number{.,...... 110101}
+                    & \Number{.,.....1 01....}
+                        & сдвиг;\\ \hline
+            \Number{....00}
+                & \Addition{.,...... 110101}
+                           {1,111110 11....}
+                           {1,111111 100101}
+                    & 
+                        & $\Delta_2<0$;\\ \hline
+            \Number{....00}
+                & \Addition{1,111111 100101}
+                           {.,.....1 01....}
+                           {.,...... 110101}
+                    & 
+                        & Восст. $\Delta_2$;\\ \hline
+            \Number{...00.}
+                & \Number{.,...... 110101}
+                    & \Number{.,...... 101...}
+                        & сдвиг;\\ \hline
+            \Number{...001}
+                & \Addition{.,...... 110101}
+                           {1,111111 011...}
+                           {.,...... ..1101}
+                    & 
+                        & $\Delta_3\ge 0$;\\ \hline
+            \Number{..001.}
+                & \Number{.,...... ..1101}
+                    & \Number{.,...... .101..}
+                        & сдвиг;
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление с восстановлением остатков II-й способ (3)}
+    \framesubtitle{$53\div 5$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{..001.}
+                & \Number{.,...... ..1101}
+                    & \Number{.,...... .101..}
+                        & $\uparrow$ \\ \hline\hline
+            \Number{..0010}
+                & \Addition{.,...... ..1101}
+                           {1,111111 1011..}
+                           {1,111111 111001}
+                    & 
+                        & $\Delta_4<0$;\\ \hline
+            \Number{..0010}
+                & \Addition{1,111111 111001}
+                           {.,...... .101..}
+                           {.,...... ..1101}
+                    & 
+                        & Восст. $\Delta_4$;\\ \hline
+            \Number{.0010.}
+                & \Number{.,...... ..1101}
+                    & \Number{.,...... ..101.}
+                        & сдвиг;\\ \hline
+            \Number{.00101}
+                & \Addition{.,...... ..1101}
+                           {1,111111 11011.}
+                           {.,...... ....11}
+                    & 
+                        & $\Delta_5\ge 0$;\\ \hline
+            \Number{00101.}
+                & \Number{.,...... ....11}
+                    & \Number{.,...... ...101}
+                        & сдвиг;
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление с восстановлением остатков II-й способ (4)}
+    \framesubtitle{$53\div 5 = \Machine{10 rem 3}$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{00101.}
+                & \Number{.,...... ....11}
+                    & \Number{.,...... ...101}
+                        & $\uparrow$ \\ \hline\hline
+            \Number{001010}
+                & \Addition{.,...... ....11}
+                           {1,111111 111011}
+                           {1,111111 111110}
+                    & 
+                        & $\Delta_6<0$;\\ \hline
+            \Number{001010}
+                & \Addition{1,111111 111110}
+                           {.,...... ...101}
+                           {.,...... 000011}
+                    & 
+                        & Восст. $\Delta_6$;\\ \hline
+        \end{tabular}
+    }
+    
+    \begin{align*}
+        q       &= (001010)_2 = 10\\
+        \Delta  &= (000011)_2 = 3
+    \end{align*}
+\end{frame}
+
+
+\subsection{Деление без восстановления остатков}
+
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков}
+
+    Если новый остаток $\Delta$ получается отрицательным, то к нему прибавляется делитель, чтобы восстановить старое (положительное) значение остатка. Чтобы не тратить на это время --- проследим, что происходит к моменту получения следующего остатка $\Delta'$.
+    
+    \begin{itemize}
+        \item В первом способе: 
+        \[
+            \Delta' = 
+                \begin{cases}
+                    2\cdot\Delta + d, & \text{ если $\Delta<0$: $2\cdot(\underbrace{\Delta + d}_\text{В.О.}) - d = 2\cdot\Delta + d$,}\\
+                    2\cdot\Delta - d, & \text{ если $\Delta\ge 0$.}
+                \end{cases}
+        \]
+        \item Во втором способе:
+        \[
+            \Delta' = 
+                \begin{cases}
+                    \Delta + d/2, & \text{ если $\Delta<0$: $(\underbrace{\Delta + d}_\text{В.О.}) - d/2 = \Delta + d/2$,}\\
+                    \Delta - d/2, & \text{ если $\Delta\ge 0$.}
+                \end{cases}
+        \]
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Алгоритм деления без восстановления остатков}
+    \framesubtitle{$n$-разрядные беззнаковые целые}
+
+    \begin{enumerate}
+        \item $i\gets 1$; В младшую часть регистра остатков заносится делимое, в старшую часть регистра делителя --- делитель. Далее состояние регистра остатков --- остаток ($\Delta$), регистра делителя --- делитель ($d$), регистра частного ($q$) --- частное.
+        \item\label{div:wvo:start} Выполнить сдвиги: частное $q$ влево, остаток $\Delta$ влево (в первом способе), делитель $d$ вправо (во втором способе).
+        \item Если $\Delta < 0$, то $\Delta\gets(\Delta + d)$, иначе $\Delta\gets(\Delta - d)$;
+        \item Если $\Delta < 0$, то в младший разряд частного занести 0, иначе 1.
+        \item $i\gets (i + 1)$. Если $\le n$, то к шагу \ref{div:wvo:start}.
+        \item Восстановим остаток. Если $\Delta < 0$, то $\Delta\gets(\Delta + d)$.
+        \item В регистре частного получено значение частного, в регистре остатков --- $n$-разрядный остаток (в первом способе в старших разрядах, во втором --- в младших).
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Алгоритм деления без восстановления остатков}
+    \framesubtitle{Примечания}
+
+    \begin{itemize}
+        \item В первом способе в регистре остатка добавлено \emph{два} разряда под знак: по младшему знаковому разряду судят о знаке полученного остатка, а по старшему судят о знаке остатка до его сдвига вправо.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков I-й способ}
+    \framesubtitle{$46\div 5$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            \hline\hline
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{......}
+                & \Number{00,...... 101110}
+                    & \Number{..,...101}
+                        & операнды;\\ \hline\hline
+            \Number{......}
+                & \Number{00,.....1 01110.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{.....0}
+                & \Addition{00,.....1 01110.}
+                           {11,111011 ......}
+                           {11,111100 01110.}
+                    & 
+                        & $-d,\Delta_1<0$;\\ \hline
+            \Number{....0.}
+                & \Number{11,111000 1110..}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{....00}
+                & \Addition{11,111000 1110..}
+                           {..,...101 ......}
+                           {11,111101 1110..}
+                    & 
+                        & $+d,\Delta_2<0$;\\ \hline
+            \Number{...00.}
+                & \Number{11,111011 110...}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{...001}
+                & \Addition{11,111011 110...}
+                           {..,...101 ......}
+                           {00,000000 110...}
+                    & 
+                        & $+d,\Delta_3\ge 0$;\\ \hline
+            \Number{..001.}
+                & \Number{00,000001 10....}
+                    & 
+                        & сдвиг;\\ 
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков I-й способ (2)}
+    \framesubtitle{$46\div 5 = \Machine{9 rem 1}$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{..001.}
+                & \Number{00,000001 10....}
+                    & 
+                        & $\uparrow$\\ \hline\hline
+            \Number{..0010}
+                & \Addition{00,000001 10....}
+                           {11,111011 ......}
+                           {11,111100 10....}
+                    & 
+                        & $-d,\Delta_4<0$;\\ \hline
+            \Number{.0010.}
+                & \Number{11,111001 0.....}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{.00100}
+                & \Addition{11,111001 0.....}
+                           {..,...101 ......}
+                           {11,111110 0.....}
+                    & 
+                        & $+d,\Delta_5<0$;\\ \hline
+            \Number{00100.}
+                & \Number{11,111100 ......}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{001001}
+                & \Addition{11,111100 ......}
+                           {..,...101 ......}
+                           {00,000001 ......}
+                    & 
+                        & $+d,\Delta_6\ge 0$;\\ \hline
+        \end{tabular}
+    }
+    $q=(001001)_2=9; \Delta=(000001)_2=1$.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков II-й способ}
+    \framesubtitle{$53\div 5$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            \hline\hline
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{......}
+                & \Number{.,...... 110101}
+                    & \Number{.,...101 ......}
+                        & операнды;\\ \hline\hline
+            \Number{......}
+                & 
+                    & \Number{.,....10 1.....}
+                        & сдвиг;\\ \hline
+            \Number{.....0}
+                & \Addition{.,...... 110101}
+                           {1,111101 1.....}
+                           {1,111110 010101}
+                    & 
+                        & $-d,\Delta_1<0$;\\ \hline
+            \Number{....0.}
+                & 
+                    & \Number{.,.....1 01....}
+                        & сдвиг;\\ \hline
+            \Number{....00}
+                & \Addition{1,111110 010101}
+                           {.,.....1 01....}
+                           {1,111111 100101}
+                    & 
+                        & $+d,\Delta_2<0$;\\ \hline
+            \Number{...00.}
+                & 
+                    & \Number{.,...... 101...}
+                        & сдвиг;\\ \hline
+            \Number{...001}
+                & \Addition{1,111111 100101}
+                           {.,...... 101...}
+                           {.,...... ..1101}
+                    & 
+                        & $+d,\Delta_3\ge 0$;\\ \hline
+            \Number{..001.}
+                & 
+                    & \Number{.,...... .101..}
+                        & сдвиг;\\ 
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков II-й способ (2)}
+    \framesubtitle{$53\div 5$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{..001.}
+                & \Number{.,...... ..1101}
+                    & \Number{.,...... .101..}
+                        & $\uparrow$\\ \hline\hline
+            \Number{..0010}
+                & \Addition{.,...... ..1101}
+                           {1,111111 1011..}
+                           {1,111111 111001}
+                    & 
+                        & $-d,\Delta_4<0$;\\ \hline
+            \Number{.0010.}
+                & 
+                    & \Number{.,...... ..101.}
+                        & сдвиг;\\ \hline
+            \Number{.00101}
+                & \Addition{1,111111 111001}
+                           {.,...... ..101.}
+                           {.,...... ....11}
+                    & 
+                        & $+d,\Delta_5\ge 0$;\\ \hline
+            \Number{00101.}
+                & 
+                    & \Number{.,...... ...101}
+                        & сдвиг;\\ \hline
+            \Number{001010}
+                & \Addition{.,...... ....11}
+                           {1,111111 111011}
+                           {1,111111 111110}
+                    & 
+                        & $-d,\Delta_6<0$;\\ 
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков II-й способ (3)}
+    \framesubtitle{$53\div 5 = \Machine{10 rem 3}$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{001010}
+                & \Number{1,111111 111110}
+                    & \Number{.,...... ...101}
+                        & $\uparrow$\\ \hline\hline
+            \Number{001010}
+                & \Addition{1,111111 111110}
+                           {.,...... ...101}
+                           {.,...... 000011}
+                    & 
+                        & Восст. остатка\\ \hline
+        \end{tabular}
+    }
+    
+    \begin{align*}
+        q &= (001010)_2 = 10\\
+        \Delta &= (000011)_2 = 3
+    \end{align*}
+\end{frame}
+
+
+\section{Деление чисел со знаком}
+
+\begin{frame}
+    \frametitle{Деление чисел со знаком}
+    \framesubtitle{Неоднозначность результатов, см. подробнее в \cite{bib:warren:algTriks}}
+
+    \[
+    \begin{tabular}{lc||l|l|l}
+        \hline\hline
+        Пример        & &Отсечение           &\multicolumn{1}{|p{.15\textwidth}|}{Модуль $\Delta\ge 0$}
+                                                                 & \multicolumn{1}{p{.22\textwidth}}{Округление $q$ к меньшему значению} \\
+        \hline\hline
+        $7\div 3$     &=&\Machine{ 2 rem  1} &\Machine{ 2 rem 1} & \Machine{ 2 rem  1} \\
+        $(-7)\div 3$  &=&\Machine{-2 rem -1} &\Machine{-3 rem 2} & \Machine{-3 rem  2} \\
+        $7\div(-3)$   &=&\Machine{-2 rem  1} &\Machine{-2 rem 1} & \Machine{-3 rem -2} \\
+        $(-7)\div(-3)$&=&\Machine{ 2 rem -1} &\Machine{ 3 rem 2} & \Machine{ 2 rem -1} \\ \hline
+    \end{tabular}
+    \]
+    
+    Остановимся на варианте <<Отсечение>>.
+\end{frame}
+
+
+\subsection{Деление без восстановления остатков}
+
+\begin{frame}
+    \frametitle{Определение разряда частного $q_0$}
+
+    Пусть $S(x)$ --- функция возвращающая знак $x$. Исходное правило:
+    \begin{enumerate}
+        \item Если знаки делимого $A$ и текущего остатка $\Delta$ совпадают, то разряд частного (модуля) $q_0\gets 1$, иначе $q_0\gets 0$.
+        \item Если знаки делимого $A$ и делителя $d$ различны, то $q_0\gets (\lnot q_0)$. (Т.е. инверсия модуля частного --- \emph{обратный код}!)
+    \end{enumerate}
+    
+    
+    Так как $(x=y)\Leftrightarrow \lnot(x\oplus y) \Leftrightarrow (1\oplus x\oplus y)$,
+    то исходное правило можно выразить одной формулой и упростить:
+    \begin{align*}
+        q_0\gets \lnot(S(A)=S(\Delta))\oplus(S(A)\oplus S(d)) \Leftrightarrow \\
+        \Leftrightarrow(1\oplus S(A)\oplus S(\Delta))\oplus (S(A)\oplus S(d)) \Leftrightarrow (1\oplus S(d)\oplus S(\Delta))\Leftrightarrow \\
+        \Leftrightarrow\lnot(S(d)\oplus S(\Delta)).
+    \end{align*}
+    \begin{block}{$\lnot(S(d)\oplus S(\Delta))$}
+        Если знаки $d$ и $\Delta$ совпадают, то $q_0\gets 1$, иначе $q_0\gets 0$.
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Алгоритм деления в ДК без восстановления остатков}
+    \framesubtitle{$n$-разрядные знаковые целые в ДК}
+
+    \begin{enumerate}
+        \item $i\gets 1$; Инициализируются регистры $q$, $\Delta$ и $d$.
+        \item\label{div:dcvo:start} Выполняются сдвиги: $q$ --- влево, $\Delta$ --- влево (I сп.), $d$ --- вправо (II~сп., с учётом знака).
+        \item Если знаки $\Delta$ и $d$ совпадают, то $\Delta\gets(\Delta - d)$, иначе $\Delta\gets(\Delta + d)$.
+        \item $q_0\gets\lnot(S(d)\oplus S(\Delta))$. Т.е. если знаки $d$ и $\Delta$ совпадают, то $q_0\gets 1$, иначе $q_0\gets 0$. Обр. код!
+        \item $i\gets (i + 1)$. Если $i<=n$, то к шагу \ref{div:dcvo:start}.
+        \item Выполняется процедура коррекции остатка и частного (см. следующий слайд).
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Процедура коррекции остатка и частного (отсечение)}
+    \framesubtitle{Вход: $A$ --- делимое, $d$ --- делитель, $q$ --- частное, $\Delta$ --- остаток. Выход: $q$, $\Delta$}
+    
+    \resizebox{\textwidth}{!}{
+        \begin{tabular}{c||c|c|}
+                & $d > 0$
+                    & $d < 0$\\
+            \hline\hline
+            \rotatebox{90}{$A\ge 0$}
+                & 
+                \parbox[c]{.3\textwidth}{
+                    \begin{align*}
+                        q&\gets q,\\
+                        \Delta&\gets 
+                        \begin{cases}
+                            (\Delta + d), & \Delta < 0, \\
+                            \Delta,      &\text{ иначе,}
+                        \end{cases}
+                    \end{align*}
+                }
+                    & 
+                    \parbox[c]{.3\textwidth}{
+                        \begin{align*}
+                            q&\gets (q+1),\\
+                            \Delta&\gets 
+                            \begin{cases}
+                                (\Delta - d), & \Delta < 0, \\
+                                \Delta,       &\text{ иначе,}
+                            \end{cases}
+                        \end{align*}
+                    }
+                    \\
+            \hline
+            \rotatebox{90}{$A < 0$}
+                & 
+                \parbox[c]{.3\textwidth}{
+                    \begin{align*}
+                        q&\gets 
+                        \begin{cases}
+                            q,      & (\Delta = 0) \lor (\Delta = -d) \\
+                            (q+1),  &\text{ иначе,}
+                        \end{cases}
+                        \\
+                        \Delta&\gets 
+                        \begin{cases}
+                            0,          & (\Delta = 0) \lor (\Delta = -d), \\
+                            (\Delta-d), & \Delta > 0, \\
+                            \Delta,     & \text{ иначе,}
+                        \end{cases}
+                    \end{align*}
+                }
+                    & 
+                    \parbox[c]{.3\textwidth}{
+                        \begin{align*}
+                            q&\gets 
+                            \begin{cases}
+                                q+1, & (\Delta = 0) \lor (\Delta = d), \\
+                                q,   &\text{ иначе,}
+                            \end{cases}
+                            \\
+                            \Delta&\gets 
+                            \begin{cases}
+                                0,        & (\Delta = 0) \lor (\Delta = d), \\
+                                \Delta+d, & \Delta > 0, \\
+                                \Delta,   & \text{ иначе.}
+                            \end{cases}
+                        \end{align*}
+                    } \\ \hline
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без ВО в ДК I-й способ}
+    \framesubtitle{$27\div(-5)$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            \hline\hline
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{......}
+                & \Number{0,...... 011011}
+                    & \Number{1,111011}
+                        & операнды;\\ \hline\hline
+            \Number{......}
+                & \Number{0,.....0 11011.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{.....1}
+                & \Addition{0,.....0 11011.}
+                           {1,111011 ......}
+                           {1,111011 11011.}
+                    & 
+                        & $+d, \Delta_1<0$;\\ \hline
+            \Number{....1.}
+                & \Number{1,110111 1011..}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{....11}
+                & \Addition{1,110111 1011..}
+                           {.,...101 ......}
+                           {1,111100 1011..}
+                    & 
+                        & $-d,\Delta_2<0$;\\ \hline
+            \Number{...11.}
+                & \Number{1,111001 011...}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{...111}
+                & \Addition{1,111001 011...}
+                           {.,...101 ......}
+                           {1,111110 011...}
+                    & 
+                        & $-d,\Delta_3<0$;\\ \hline
+            \Number{..111.}
+                & \Number{1,111100 11....}
+                    & 
+                        & сдвиг;\\ 
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без ВО в ДК I-й способ (2)}
+    \framesubtitle{$27\div(-5)$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{..111.}
+                & \Number{1,111100 11....}
+                    & 
+                        & $\uparrow$\\ \hline\hline
+            \Number{..1110}
+                & \Addition{1,111100 11....}
+                           {0,000101 ......}
+                           {0,000001 11....}
+                    & 
+                        & $-d,\Delta_4\ge 0$;\\ \hline
+            \Number{.1110.}
+                & \Number{0,000011 1.....}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{.11101}
+                & \Addition{0,000011 1.....}
+                           {1,111011 ......}
+                           {1,111110 1.....}
+                    & 
+                        & $+d,\Delta_5<0$;\\ \hline
+            \Number{11101.}
+                & \Number{1,111101 ......}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{111010}
+                & \Addition{1,111101 ......}
+                           {.,...101 ......}
+                           {0,000010 ......}
+                    & 
+                        & $-d,\Delta_6\ge 0$;\\ 
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без ВО в ДК I-й способ (3)}
+    \framesubtitle{$27\div(-5)=\Machine{-5 rem 2}$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{r|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{111010}
+                & \Number{0,000010 ......}
+                    & 
+                        & $\uparrow$\\ \hline\hline
+            \Addition{111010}{000001}{111011}
+                & \Number{0,000010 ......}
+                    & 
+                        & $q\gets(q+1)$;\\ \hline
+        \end{tabular}
+    }
+    
+    \begin{align*}
+        \DC{q}      &= (111011)_2 \Rightarrow -5\\
+        \DC{\Delta} &= (000010)_2 \Rightarrow 2
+    \end{align*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков II-й способ}
+    \framesubtitle{$(-25)\div 6$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{r|r|r|l}
+            \hline\hline
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{......}
+                & \Number{1,111111 100111}
+                    & \Number{.,...110 ......}
+                        & операнды;\\ \hline\hline
+            \Number{......}
+                & 
+                    & \Number{.,....11 0.....}
+                        & сдвиг;\\ \hline
+            \Number{.....1}
+                & \Addition{1,111111 100111}
+                           {.,....11 0.....}
+                           {0,....10 100111}
+                    & 
+                        & $+d,\Delta_1\ge 0$;\\ \hline
+            \Number{....1.}
+                & 
+                    & \Number{.,.....1 10....}
+                        & сдвиг;\\ \hline
+            \Number{....11}
+                & \Addition{0,....10 100111}
+                           {1,111110 10....}
+                           {0,.....1 000111}
+                    & 
+                        & $-d,\Delta_2\ge 0$;\\ \hline
+            \Number{...11.}
+                & 
+                    & \Number{.,...... 110...}
+                        & сдвиг;\\ \hline
+            \Number{...111}
+                & \Addition{0,.....1 000111}
+                           {1,111111 010...}
+                           {0,...... .10111}
+                    & 
+                        & $-d,\Delta_3\ge 0$;\\ \hline
+            \Number{..111.}
+                & 
+                    & \Number{.,...... .110..}
+                        & сдвиг;\\ 
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков II-й способ (2)}
+    \framesubtitle{$(-25)\div 6$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{..111.}
+                & \Number{0,...... .10111}
+                    & \Number{.,...... .110..}
+                        & $\uparrow$\\ \hline\hline
+            \Number{..1110}
+                & \Addition{0,...... .10111}
+                           {1,111111 1010..}
+                           {1,111111 111111}
+                    & 
+                        & $-d,\Delta_4\ge 0$;\\ \hline
+            \Number{.1110.}
+                & 
+                    & \Number{.,...... ..110.}
+                        & сдвиг;\\ \hline
+            \Number{.11101}
+                & \Addition{1,111111 111111}
+                           {.,...... ..110.}
+                           {0,...... ..1011}
+                    & 
+                        & $+d,\Delta_5\ge 0$;\\ \hline
+            \Number{11101.}
+                & 
+                    & \Number{.,...... ...110}
+                        & сдвиг;\\ \hline
+            \Number{111011}
+                & \Addition{0,...... ..1011}
+                           {1,111111 111010}
+                           {0,...... ...101}
+                    & 
+                        & $-d,\Delta_6\ge 0$;\\ 
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков II-й способ (3)}
+    \framesubtitle{$(-25)\div 6 = \Machine{-4 rem -1}$}
+    
+    \resizebox{.85\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$ $\rightarrow$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{111011}
+                & \Number{0,...... ...101}
+                    & \Number{.,...... ...110}
+                        & $\uparrow$\\ \hline\hline
+            \Number{111011}
+                & \Addition{.,...... ...101}
+                           {1,111111 111010}
+                           {1,111111 111111}
+                    & 
+                        & Восст. остатка, $-d$\\ \hline
+            \Addition{111011}
+                     {000001}
+                     {111100}
+                & \NumberLo{1,111111 }{111111}
+                    & 
+                        & $q\gets(q+1)$\\ \hline
+        \end{tabular}
+    }
+    
+    \begin{align*}
+        \DC{q}      &= (111100)_2 \Rightarrow -4\\
+        \DC{\Delta} &= (111111)_2 \Rightarrow -1
+    \end{align*}
+\end{frame}
+
+
+\appendix
+
+
+\section{Задания на практику}
+
+
+\subsection{Проходное}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Выполнить беззнаковое деление чисел:
+    \begin{enumerate}
+        \item $27\div 9$, первым способом без восстановления остатков;
+
+        \item $39\div 10$, вторым способом без восстановления остатков;
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Выполнить целочисленное деление в дополнительном коде чисел со знаком:
+    \begin{enumerate}
+        \item $122\div  22$, первым и вторым способами;
+        
+        \item $122\div  19$, первым способом;
+        
+        \item $(-119) \div 11$, первым способом;
+        
+        \item $(-118)\div(-11)$, вторым способом;
+
+        \item $123\div (-12)$, вторым способом.
+    \end{enumerate}
+\end{frame}
+
+\subsection{Мегамозг}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Выполнить целочисленное деление в дополнительном коде в 8-и разрядной сетке чисел со знаком (любым способом):
+    \begin{enumerate}
+        \item $(-128)\div(-127)$;
+        \item $(-128)\div 127$;
+        \item $127\div(-128)$;
+        \item $0\div(127)$.
+    \end{enumerate}
+\end{frame}
+
+\section{Самообучение}
+
+\begin{frame}
+    \frametitle{Советы самоучке}
+
+    Подробно об особенностях целочисленного деления см. в \cite{bib:warren:algTriks}. <<Длинные>> алгоритмы умножения и деления, см. в четвертой главе <<Арифметика>> \cite{bib:knuth:artOfProgramming2}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Библиография}
+    \bibliographystyle{gost780u}
+    \bibliography{./../../../bibliobase}
+\end{frame}
+
+\end{document}
+
+
+
+

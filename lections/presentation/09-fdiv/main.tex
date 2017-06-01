@@ -1,0 +1,863 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[Деление в формате с ПЗ]{Деление вещественных чисел \\ в формате с плавающей точкой}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+\begin{frame}<presentation>
+    \frametitle{Содержание}
+    \tableofcontents
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Деление чисел в формате с плавающей точкой}
+    
+    \[
+        \frac{A}{d}=q=
+        \frac{\FloatExpression{A}{2}}{\FloatExpression{d}{2}}=\left(\frac{\MantissOf{A}}{\MantissOf{d}}\right)\cdot 2^{(\OrderOf{A}-\OrderOf{d})},
+    \]
+    где $A$ --- делимое, $d$ --- делитель, $q$ --- частное.
+    
+    Отдельно обрабатываются исключительные случаи:
+    \begin{enumerate}
+        \item деления на ноль;
+        \item деления ноля.
+    \end{enumerate}
+    
+    Алгоритм деления ненулевых чисел $\frac{A}{B}$
+    \begin{enumerate}
+        \item Вычитанием из порядка делимого порядка делителя определяется порядок частного: $\OrderOf{q}=(\OrderOf{A}-\OrderOf{d})$.
+        \item Делением мантиссы делимого на мантиссу делителя определяется мантисса частного: $\MantissOf{q}=\frac{\MantissOf{A}}{\MantissOf{d}}$. Деление мантисс см. далее.
+        \item Выполняется нормализация частного $q$. Фиксируется результат или ошибка.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Пример деления дробных чисел (10CC, $n=3$)}
+    \framesubtitle{Англо-американская система: $0.738/0.345\approx 2.139$}
+    
+    \begin{center}
+    \resizebox{!}{.8\height} {
+    \begin{tabular}{rccccccccc|c|l}
+        \uncover<1->{ }&\uncover<2->{2}&\uncover<2->{,}&\uncover<3->{1}&\uncover<4->{3}&\uncover<5->{9}&\uncover<6->{1}&\uncover<1->{ }&\uncover<1->{ }&\uncover<1->{ }&      & --- мантисса частного\\ \hline
+        \uncover<1->{ }&\uncover<1->{0}&\uncover<1->{,}&\uncover<1->{7}&\uncover<1->{3}&\uncover<1->{8}&\uncover<1->{ }&\uncover<1->{ }&\uncover<1->{ }&\uncover<1->{ }&:0,345& --- мантиссы делимого:делителя\\ \hline
+        \uncover<2->{ }&\uncover<2->{0}&\uncover<2->{,}&\uncover<2->{7}&\uncover<2->{3}&\uncover<2->{8}&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&      & \\ 
+        \uncover<2->{-}&\uncover<2->{0}&\uncover<2->{,}&\uncover<2->{6}&\uncover<2->{9}&\uncover<2->{0}&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&      & \\ 
+        \uncover<2->{=}&\uncover<2->{0}&\uncover<2->{,}&\uncover<2->{*}&\uncover<2->{4}&\uncover<2->{8}&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&      & \uncover<2->{$q_0=2$}\\ \hline
+        \uncover<3->{ }&\uncover<3->{0}&\uncover<3->{,}&\uncover<3->{*}&\uncover<3->{4}&\uncover<3->{8}&\uncover<3->{0}&\uncover<3->{ }&\uncover<3->{ }&\uncover<3->{ }&      & \\ 
+        \uncover<3->{-}&\uncover<3->{0}&\uncover<3->{,}&\uncover<3->{*}&\uncover<3->{3}&\uncover<3->{4}&\uncover<3->{5}&\uncover<3->{ }&\uncover<3->{ }&\uncover<3->{ }&      & \\ 
+        \uncover<3->{=}&\uncover<3->{0}&\uncover<3->{,}&\uncover<3->{*}&\uncover<3->{1}&\uncover<3->{3}&\uncover<3->{5}&\uncover<3->{ }&\uncover<3->{ }&\uncover<3->{ }&      & \uncover<3->{$q_{-1}=1}$\\ \hline
+        \uncover<4->{ }&\uncover<4->{0}&\uncover<4->{,}&\uncover<4->{*}&\uncover<4->{1}&\uncover<4->{3}&\uncover<4->{5}&\uncover<4->{0}&\uncover<4->{ }&\uncover<4->{ }&      & \\ 
+        \uncover<4->{-}&\uncover<4->{0}&\uncover<4->{,}&\uncover<4->{*}&\uncover<4->{1}&\uncover<4->{0}&\uncover<4->{3}&\uncover<4->{5}&\uncover<4->{ }&\uncover<4->{ }&      & \\ 
+        \uncover<4->{=}&\uncover<4->{0}&\uncover<4->{,}&\uncover<4->{*}&\uncover<4->{*}&\uncover<4->{3}&\uncover<4->{1}&\uncover<4->{5}&\uncover<4->{ }&\uncover<4->{ }&      & \uncover<4->{$q_{-2}=3}$\\ \hline
+        \uncover<5->{ }&\uncover<5->{0}&\uncover<5->{,}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{3}&\uncover<5->{1}&\uncover<5->{5}&\uncover<5->{0}&\uncover<5->{ }&      & \\ 
+        \uncover<5->{-}&\uncover<5->{0}&\uncover<5->{,}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{3}&\uncover<5->{1}&\uncover<5->{0}&\uncover<5->{5}&\uncover<5->{ }&      & \\ 
+        \uncover<5->{=}&\uncover<5->{0}&\uncover<5->{,}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{4}&\uncover<5->{5}&\uncover<5->{ }&      & \uncover<5->{$q_{-3}=9}$\\ \hline
+        \uncover<6->{ }&\uncover<6->{0}&\uncover<6->{,}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{4}&\uncover<6->{5}&\uncover<6->{0}&      & \\ 
+        \uncover<6->{-}&\uncover<6->{0}&\uncover<6->{,}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{3}&\uncover<6->{4}&\uncover<6->{5}&      & \\ 
+        \uncover<6->{=}&\uncover<6->{0}&\uncover<6->{,}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{1}&\uncover<6->{0}&\uncover<6->{5}&      & \uncover<6->{$q_{-4}=1$ --- для округления!}\\ 
+    \end{tabular}
+    }
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Целочисленное деление (2CC, $n=3$), $0.625/0.75$}
+    \framesubtitle{Англо-американская система $(0.101)_2/(0.110)_2\approx(0.111)$}
+    
+    \begin{center}
+    \resizebox{!}{.8\height} {
+    \begin{tabular}{cccccccccc|c|l}
+        \uncover<1->{ }&\uncover<2->{0}&\uncover<2->{,}&\uncover<3->{1}&\uncover<4->{1}&\uncover<5->{0}&\uncover<6->{$\tilde{1}$}&\uncover<1->{ }&\uncover<1->{ }&\uncover<1->{ }&      & Частное                 \\ \hline
+        \uncover<1->{ }&\uncover<1->{0}&\uncover<1->{,}&\uncover<1->{1}&\uncover<1->{0}&\uncover<1->{1}&\uncover<1->{ }&\uncover<1->{ }&\uncover<1->{ }&\uncover<1->{ }&:0.110& Делимое                 \\ \hline
+        \uncover<2->{ }&\uncover<2->{0}&\uncover<2->{,}&\uncover<2->{1}&\uncover<2->{0}&\uncover<2->{1}&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&      &                         \\
+        \uncover<2->{-}&\uncover<2->{0}&\uncover<2->{,}&\uncover<2->{0}&\uncover<2->{0}&\uncover<2->{0}&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&      &                         \\
+        \uncover<2->{=}&\uncover<2->{0}&\uncover<2->{,}&\uncover<2->{1}&\uncover<2->{0}&\uncover<2->{1}&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&\uncover<2->{ }&      &\uncover<2->{$q_0=0$}    \\ \hline
+        \uncover<3->{ }&\uncover<3->{0}&\uncover<3->{,}&\uncover<3->{1}&\uncover<3->{0}&\uncover<3->{1}&\uncover<3->{0}&\uncover<3->{ }&\uncover<3->{ }&\uncover<3->{ }&      &                         \\
+        \uncover<3->{-}&\uncover<3->{0}&\uncover<3->{,}&\uncover<3->{*}&\uncover<3->{1}&\uncover<3->{1}&\uncover<3->{0}&\uncover<3->{ }&\uncover<3->{ }&\uncover<3->{ }&      &                         \\
+        \uncover<3->{=}&\uncover<3->{0}&\uncover<3->{,}&\uncover<3->{*}&\uncover<3->{1}&\uncover<3->{0}&\uncover<3->{0}&\uncover<3->{ }&\uncover<3->{ }&\uncover<3->{ }&      &\uncover<3->{$q_{-1}=1$} \\ \hline
+        \uncover<4->{ }&\uncover<4->{0}&\uncover<4->{,}&\uncover<4->{*}&\uncover<4->{1}&\uncover<4->{0}&\uncover<4->{0}&\uncover<4->{0}&\uncover<4->{ }&\uncover<4->{ }&      &                         \\
+        \uncover<4->{-}&\uncover<4->{0}&\uncover<4->{,}&\uncover<4->{*}&\uncover<4->{*}&\uncover<4->{1}&\uncover<4->{1}&\uncover<4->{0}&\uncover<4->{ }&\uncover<4->{ }&      &                         \\
+        \uncover<4->{=}&\uncover<4->{0}&\uncover<4->{,}&\uncover<4->{*}&\uncover<4->{*}&\uncover<4->{*}&\uncover<4->{1}&\uncover<4->{0}&\uncover<4->{ }&\uncover<4->{ }&      &\uncover<4->{$q_{-2}=1$} \\ \hline
+        \uncover<5->{ }&\uncover<5->{0}&\uncover<5->{,}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{1}&\uncover<5->{0}&\uncover<5->{0}&\uncover<5->{ }&      &                         \\
+        \uncover<5->{-}&\uncover<5->{0}&\uncover<5->{,}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{0}&\uncover<5->{0}&\uncover<5->{0}&\uncover<5->{ }&      &                         \\
+        \uncover<5->{=}&\uncover<5->{0}&\uncover<5->{,}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{*}&\uncover<5->{1}&\uncover<5->{0}&\uncover<5->{0}&\uncover<5->{ }&      &\uncover<5->{$q_{-3}=0$} \\ \hline
+        \uncover<6->{ }&\uncover<6->{0}&\uncover<6->{,}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{1}&\uncover<6->{0}&\uncover<6->{0}&\uncover<6->{0}&      &                         \\
+        \uncover<6->{-}&\uncover<6->{0}&\uncover<6->{,}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{1}&\uncover<6->{1}&\uncover<6->{0}&      &                         \\
+        \uncover<6->{=}&\uncover<6->{0}&\uncover<6->{,}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{*}&\uncover<6->{1}&\uncover<6->{0}&      & \uncover<6->{$q_{-4}=1$, только для округления!} 
+    \end{tabular}
+    }
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Схема деления мантисс I-м способом}
+    \framesubtitle{Потенциально бесконечная точность}
+
+    \only<1> {
+        Начальное состояние:
+        \begin{center}
+            \includegraphics[width=0.55\textwidth]{fig/ibegin}
+        \end{center}
+    }
+    \only<2> {
+        Конечное состояние:
+        \begin{center}
+            \includegraphics[width=0.55\textwidth]{fig/iend}
+        \end{center}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Схема деления мантисс II-м способом}
+
+    \only<1> {
+        Начальное состояние:
+        \begin{center}
+            \includegraphics[width=0.9\textwidth]{fig/iibegin}
+        \end{center}
+    }
+    \only<2> {
+        Конечное состояние:
+        \begin{center}
+            \includegraphics[width=0.9\textwidth]{fig/iiend}
+        \end{center}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление нормализованных двоичных мантисс}
+    
+    \begin{block}{Нормализованная мантисса вещественного числа $X\neq 0$}
+        $\MantissOf{X}$ представляет собой число, целая часть которого --- ноль, а в старшем разряде дробной части --- единица:
+        \( (0.\underbrace{1xxx\cdots xxx}_{\text{\tiny{мантисса}}})_2\)
+    \end{block}
+    
+    Так как нормализованная мантисса --- это число из интервала:
+    \(
+        \left[\frac{1}{2}, 1\right),
+    \)
+    то результат деления мантисс будет находиться в 
+    \(
+        \left(\frac{1}{2}, 2\right).
+    \)
+    
+    \begin{block}{Результат либо нормализован, либо нет:}
+        \begin{align*}
+            (0.1xxx\cdots xxx)_2 &\in \left(\frac{1}{2},1\right),\\
+            (1.xxxx\cdots xxx)_2 &\in \left[1,2\right)
+        \end{align*}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Ситуации ПРС и ПМР}
+
+    Как и в умножении с плавающей точкой, возможны ситуации:
+    \begin{itemize}
+        \item ПРС, возникающей, когда результат вычитания порядков операндов выходит за пределы представления \emph{положительных} порядков. При делении ситуация ПРС является неустранимой, так как в процессе нормализации порядок результата может только увеличиваться. В случае ПРС --- фиксируется ошибка вычислений.
+        \item ПМР, возникающей, когда результат вычитания порядков операндов выходит за пределы представления \emph{отрицательных} порядков. При делении ситуация ПМР является устранимой, так как в процессе нормализации порядок результата может увеличиваться и порядок результата может <<вернуться>> в диапазон. В случае ПМР --- в качестве результата выдается ноль (и при необходимости устанавливается ПМР-флаг).
+    \end{itemize}
+\end{frame}
+
+\section{Беззнаковое деление мантисс}
+
+
+\subsection{Деление мантисс с восстановлением остатков}
+
+
+\begin{frame}
+    \frametitle{Алгоритм деления мантисс с восстановлением остатков}
+    \framesubtitle{Вход: $n$-разрядные мантиссы операндов, $\OrderOf{q}$ --- порядок результата}
+    
+    \begin{enumerate}
+        \item $i\gets 0$; в соответствии со схемой способа инициализировать регистры: остатка $\Delta$, делителя $d$, частного $q$.
+        \item\label{fdiv:vo:start} Получить новый остаток $\Delta\gets(\Delta - d)$;
+        \item Если $\Delta \ge 0$, то в младший разряд частного занести 1. Если $i=0$ (ненормализованный результат), то $i\gets(i + 1)$; $\OrderOf{q}\gets(\OrderOf{q} + 1)$.
+        \item Если $\Delta < 0$, то в младший разряд частного занести 0 и выполнить восстановление старого значения остатка: $\Delta\gets(\Delta + d)$.
+        \item В соответствии со схемой выполнить сдвиги регистров: $q$, $\Delta$, $d$.
+        \item $i\gets (i + 1)$. Если $i\le n$, то к шагу \ref{fdiv:vo:start}.
+        \item Выполнить округление (не обязательный шаг), получив еще один остаток $\Delta\gets(\Delta - d)$ и увеличив частное на единицу, если $\Delta\ge 0$.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Форматы для примеров}
+
+    \begin{enumerate}
+        \item С порядком:
+        \[
+            \FloatMyOrderX{X}{XXXXX}{X}{XXX}
+        \]
+        где разряды $[9:4]$ --- ПК мантиссы, $[9]$ --- знак числа, $[8:4]$ --- разряды нормализованного модуля мантиссы, $[3:0]$ --- ПК порядка, $[3]$ --- знак порядка, $[2:0]$ --- модуль порядка.
+
+        \item С характеристикой:
+        \[
+            \FloatMyCharX{X}{XXXXX}{XXXX}
+        \]
+        где разряды $[9:4]$ --- ПК мантиссы, $[9]$ --- знак числа, $[8:4]$ --- разряды нормализованного модуля мантиссы, $[4:0]$ --- характеристика.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $(-29)/50$ с восстановлением остатков I-й способ}
+    \framesubtitle{Операнды и получение порядка частного}
+    
+    \begin{align*}
+        A=-29 &=\FloatMyOrderX{1}{11101}{0}{101}\\
+        d=50  &=\FloatMyOrderX{0}{11001}{0}{110}
+    \end{align*}
+    
+    Определяется предварительный порядок частного. Используем для работы с порядками модифицированный дополнительный код:
+    
+    \[
+        \Addition{00,101}
+                 {11,010}
+                 {11,111}
+    \]
+    
+    $\MDC{\OrderOf{q}}=\Number{11,111}$.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $(-29)/50$ с восстановлением остатков I-й способ}
+    \framesubtitle{Деление мантисс}
+    
+    \resizebox{.95\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            \hline\hline
+            Частное $q, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{.....}
+                & \Number{0,11101}
+                    & \Number{0,11001}
+                        & операнды; $i=0$\\ \hline\hline
+            \Number{....1}
+                & \Number{0,11101+1,00111=0,00100}
+                    & 
+                        & $\Delta_1=\Delta_0,\OrderOf{q}\gets(\OrderOf{q} + 1);$\\
+                &   &   & $\MDC{\OrderOf{q}}=\Number{00,000}$;\\ \hline
+            \Number{...1.}
+                & \Number{0,0100.}
+                    & 
+                        & Сдвиги;\\ \hline
+            \Number{...10}
+                & \Number{0,0100.+1,00111=1,01111}
+                    & 
+                        & $\Delta_2< 0$;\\ \hline
+                & \Number{1,01111+0,11001=0,0100.}
+                    & 
+                        & Восстановление $\Delta_2$\\ \hline
+            \Number{..10.}
+                & \Number{0,100..}
+                    & 
+                        & Сдвиги;\\ \hline
+            \Number{..100}
+                & \Number{
+                    0,100..+1,00111=1,10111}
+                    & 
+                        & $\Delta_3< 0$;\\ \hline
+                & \Number{1,10111+0,11001=0,100..}
+                    & 
+                        & Восстановление $\Delta_3$\\ \hline
+            \Number{.100.}
+                & \Number{1,00...}
+                    & 
+                        & Сдвиги;\\ \hline
+            \Number{.1001}
+                & \Number{1,00...+1,00111=0,00111}
+                    & 
+                        & $\Delta_4\ge 0$;\\ \hline
+            \Number{1001.}
+                & \Number{0,0111.}
+                    & 
+                        & Сдвиги;\\ \hline
+            \Number{10010}
+                & \Number{0,0111.+1,00111=1,10101}
+                    & 
+                        & $\Delta_5<0$;\\ \hline\hline
+            \multicolumn{4}{c}{Округление необязательно} \\ \hline\hline
+                & \Number{1,10101+0,11001=0,0111.}
+                    & 
+                        & Восстановление $\Delta_5$\\ \hline
+            
+                & \Number{0,111..}
+                    & 
+                        & Сдвиг $\Delta$, но не $q$;\\ \hline
+            \Number{10011}
+                & \Number{0,111..+1,00111=0,00011}
+                    & 
+                        & $\Delta_6\ge 0, \MantissOf{q}\gets(\MantissOf{q} + 1)$; \\ \hline
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $(-29)/50$ с восстановлением остатков I-й способ}
+    \framesubtitle{Фиксация результата}
+    
+    \begin{itemize}
+        \item Инкремент мантиссы из-за округления не повлек её ПРС --- нормализация не нужна.
+        \item Переполнения порядка частного не было: $\MDC{\OrderOf{q}}=\Number{00,000}$.
+        \item Знак результата $1\oplus 0 = 1$.
+    \end{itemize}
+    
+    Результат с округлением:
+    \begin{align*}
+        \FloatMyOrderX{1}{10011}{0}{000} = 0.59375,\\
+        \Delta=|0.58-0.59375|=0.01375, \delta = \frac{0.01375}{0.58}\approx 2.37\%
+    \end{align*}
+    
+    Результат без округления:
+    \[
+        \FloatMyOrderX{1}{10010}{0}{000} = 0.5625,
+        \Delta=0.0175, \delta \approx 3.02\%
+    \]
+\end{frame}
+
+
+\subsection{Деление без восстановления остатков}
+
+
+\begin{frame}
+    \frametitle{Деление без восстановления остатков}
+
+    Если новый остаток $\Delta$ получается отрицательным, то к нему прибавляется делитель, чтобы восстанавить старое (положительное) значение остатка. Чтобы не тратить на это время --- проследим, что происходит к моменту получения следующего остатка $\Delta'$.
+    
+    \begin{itemize}
+        \item В первом способе: 
+        \[
+            \Delta' = 
+                \begin{cases}
+                    2\cdot\Delta + d, & \text{ если $\Delta<0$: $2\cdot(\underbrace{\Delta + d}_\text{В.О.}) - d = 2\cdot\Delta + d$,}\\
+                    2\cdot\Delta - d, & \text{ если $\Delta\ge 0$.}
+                \end{cases}
+        \]
+        \item Во втором способе:
+        \[
+            \Delta' = 
+                \begin{cases}
+                    \Delta + d/2, & \text{ если $\Delta<0$: $(\underbrace{\Delta + d}_\text{В.О.}) - d/2 = \Delta + d/2$,}\\
+                    \Delta - d/2, & \text{ если $\Delta\ge 0$.}
+                \end{cases}
+        \]
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Алгоритм деления мантисс без восстановления остатков}
+    \framesubtitle{Вход: $n$-разрядные мантиссы операндов, $\OrderOf{q}$ --- порядок результата}
+    
+    \begin{enumerate}
+        \item $i\gets 0$; в соответствии со схемой способа инициализировать регистры: остатка $\Delta$, делителя $d$, частного $q$.
+        \item\label{fdiv:wvo:start} Получить новый остаток: если $\Delta\ge 0$, то $\Delta\gets(\Delta - d)$, иначе $\Delta\gets(\Delta + d)$.
+        \item Если $\Delta \ge 0$, то в младший разряд частного занести 1. Если $i=0$ (ненормализованный результат), то $i\gets(i + 1)$; $\OrderOf{q}\gets(\OrderOf{q} + 1)$.
+        \item Если $\Delta < 0$, то в младший разряд частного занести 0.
+        \item В соответствии со схемой выполнить сдвиги регистров: $q$, $\Delta$, $d$.
+        \item $i\gets (i + 1)$. Если $i\le n$, то к шагу \ref{fdiv:wvo:start}.
+        \item Выполнить округление (не обязательный шаг), получив еще один остаток (см. шаг \ref{fdiv:wvo:start}) и увеличив частное на единицу, если $\Delta\ge 0$.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $50/(-29)$ без ВО I-й способ}
+    \framesubtitle{Операнды и получение характеристики частного}
+    
+    \begin{align*}
+        A=50  &=\FloatMyCharX{0}{11001}{1110}\\
+        B=-29 &=\FloatMyCharX{1}{11101}{1101}
+    \end{align*}
+    
+    Определяется харатеристика частного: $\CharOf{q}=(\CharOf{A}-\CharOf{d}) + \Delta$. Используем для работы с характеристиками МДК: 
+   \[\Number{00,1110} + \Number{11,0011} + \Number{00,1000}=\Number{00,1001}.\]
+    
+    $\MDC{\CharOf{q}}=\Number{00,1001}$.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $50/(-29)$ без ВО I-й способ}
+    \framesubtitle{Деление мантисс}
+    
+    \resizebox{.98\textwidth}{!}{
+        \begin{tabular}{c|r|r|l}
+            \hline\hline
+            Частное $\MantissOf{q}, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{.....}
+                & \Number{00,11001}
+                    & \Number{00,11101}
+                        & операнды;\\ \hline\hline
+            \Number{....0}
+                & \Number{00,11001+11,00011=11,11100}
+                    & 
+                        & $-d,\Delta_0<0$; Р-т нормализован!\\ \hline
+            \Number{...0.}
+                & \Number{11,1100.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{...01}
+                & \Number{11,1100.+00,11101=00,10101}
+                    & 
+                        & $+d,\Delta_1\ge 0$;\\ \hline
+            \Number{..01.}
+                & \Number{01,0101.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{..011}
+                & \Number{01,0101.+11,00011=00,01101}
+                    & 
+                        & $-d,\Delta_2\ge 0$;\\ \hline
+            \Number{.011.}
+                & \Number{00,1101.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{.0110}
+                & \Number{00,1101.+11,00011=11,11101}
+                    & 
+                        & $-d,\Delta_3<0$;\\ \hline
+            \Number{0110.}
+                & \Number{11,1101.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{01101}
+                & \Number{11,1101.+00,11101=00,10111}
+                    & 
+                        & $+d,\Delta_4\ge 0$;\\ \hline
+            \Number{1101.}
+                & \Number{01,0111.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{11011}
+                & \Number{01,0111.+11,00011=00,10001}
+                    & 
+                        & $-d,\Delta_5\ge 0$;\\ \hline\hline
+            \multicolumn{4}{c}{Округление необязательно} \\ \hline\hline
+                & \Number{01,0001.}
+                    & 
+                        & сдвиг;\\ \hline
+            \Number{11100}
+                & \Number{01,0001.+11,00011=00,00101}
+                    & 
+                        & $-d,\Delta_6\ge 0,\MantissOf{q}\gets(\MantissOf{q} + 1)$;\\ \hline\hline
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $50/(-29)$ без ВО I-й способ}
+    \framesubtitle{Фиксация результата}
+    
+    \begin{itemize}
+        \item Инкремент мантиссы из-за округления не повлек её ПРС --- нормализация не нужна.
+        \item Переполнения характеристики частного не было: \[\MDC{\CharOf{q}}=\Number{00,1001}.\]
+        \item Знак результата $(1\oplus 0) = 1$.
+    \end{itemize}
+    
+    Результат с округлением:
+    \[
+        \FloatMyCharX{1}{11100}{1001} = 1.75,
+        \Delta\approx 0.0259, \delta = 1.5\%
+    \]
+    
+    Результат без округления:
+    \[
+        \FloatMyCharX{1}{11011}{1001} = 1.6875,
+        \Delta\approx 0.0366, \delta = 2.125\%
+    \]
+\end{frame}
+
+
+\section{Деление мантисс в дополнительном коде}
+
+\begin{frame}
+    \frametitle{Представление мантисс в дополнительном коде}
+
+    Договоримся фиксировать точку после знакового разряда.
+    
+    Формат с порядком:\(\left\{
+    \begin{tabular}{rcc}
+         0 & = & \FloatMyDcOrderX{000000}{0}{000}\\
+         9 & = & \FloatMyDcOrderX{010010}{0}{100}\\
+        -9 & = & \FloatMyDcOrderX{101110}{0}{100}\\
+    \end{tabular}
+    \right\}\)
+    
+    Формат с характеристикой:\(\left\{
+    \begin{tabular}{rcc}
+          1 & = & \FloatMyDcCharX{010000}{1001}\\
+         25 & = & \FloatMyDcCharX{011001}{1101}\\
+        -25 & = & \FloatMyDcCharX{100111}{1101}\\
+    \end{tabular}
+    \right\}\)
+\end{frame}
+
+
+\subsection{Теория}
+
+\begin{frame}
+    \frametitle{Определение разряда частного $q_0$}
+
+    Пусть $S(x)$ --- функция, возвращающая знак $x$.
+    \begin{enumerate}
+        \item\label{fpt:dc:q:sub} $q_0\gets 1$, если знаки делимого $A$ и текущего остатка $\Delta$ совпадают, иначе $q_0\gets 0$.
+        \item\label{fpt:dc:q:not} $q_0$ инвертируется, если знаки делимого $A$ и делителя $d$ различны (т.е. результат отрицателен).
+    \end{enumerate}
+    
+    Выражая формулой и упрощая:
+    \begin{align*}
+        q_0\gets(
+        \underbrace{(1\oplus S(\Delta)\oplus S(A))}_{\text{п.\ref{fpt:dc:q:sub} правила}}
+        \oplus
+        \underbrace{(S(A)\oplus S(d))}_{\text{п.\ref{fpt:dc:q:not} правила}}
+        ),\\
+        q_0\gets\lnot(S(\Delta)\oplus S(d)),\\
+        q_0\gets(S(\Delta)=S(d)).
+    \end{align*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Процедура поиска разряда частного}
+    \framesubtitle{Вызов: $\text{ШАГ}(\Delta,d,q)$}
+
+    \begin{enumerate}
+        \item Если знак остатка $\Delta$ и делителя $d$ совпадают, то $\Delta\gets(\Delta-d)$, иначе $\Delta\gets(\Delta+d)$.
+        \[
+            \Delta\gets
+                \begin{cases}
+                    (\Delta-d), & \text{ если $S(\Delta)=S(d)$},\\
+                    (\Delta+d), & \text{ иначе}.
+                \end{cases}
+        \]
+        
+        \item Определяется значение младшего разряда мантиссы частного: $1$, если знаки остатка $\Delta$ и делителя $d$ совпадают, иначе --- $0$.
+        \[
+            q_0\gets(S(\Delta)=S(d)).
+        \]
+        Значение подается на вход замещения младшего разряда регистра мантиссы частного $q$.
+        
+        \item В соответствии со схемой выполняются сдвиги регистров $\Delta$, $d$, $q$.
+    \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Алгоритм деления мантисс в ДК без ВО}
+
+    \begin{enumerate}
+        \item Если делитель --- ноль, фиксируется ошибка деления на ноль.
+        
+        \item Если делимое --- ноль, фиксируется результат: ноль.
+        
+        \item Определяется предварительный порядок частного: $\OrderOf{q}\gets(\OrderOf{A}-\OrderOf{d})$. Возможны ПМР или ПРС.
+        
+        \item \label{fdiv:dc:init} Инициализируются регистры остатка $\Delta$ и делителя $d$. Младший разряд регистра частного $q_0$ заполняются знаком будущего результата: $q_0\gets (sign(A)\oplus sign(d))$.
+
+        \item Устанавливается шаг $i\gets 1$. Нужно выполнить $(n-1)$ шагов.
+        
+        \item \label{fdiv:dc:loop} Выполняется 
+        \(
+            \text{ШАГ}(\Delta,d,q).
+        \)
+        
+        \item $i\gets (i + 1)$. Если $i < n$, то выполняется переход к пункту \ref{fdiv:dc:loop}.
+        
+        \item Если $\MantissOf{q}$ нормализована, то $\OrderOf{q}\gets(\OrderOf{q} + 1)$ и переход к пункту \ref{fdiv:dc:end}. Возможно ПРС.
+        
+        \item Выполняется 
+        \(
+            \text{ШАГ}(\Delta,d,q),
+        \)
+        
+        \item \label{fdiv:dc:end} Фиксируется ошибка или выдается результат: $\FloatExpression{q}{2}$. 
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Округление позволяет повысить точность}
+    
+    \begin{enumerate}
+        \item Выполняется поиск старшего разряда отбрасываемой части. Для этого выполняется
+        \(
+            \text{ШАГ}(\Delta,d,q),
+        \)
+        но сдвиг регистра частного не выполняется.
+        
+        \item Если найденный старший разряд отбрасываемой части --- ноль, то алгоритм завершается, коррекции мантиссы не требуется.
+        
+        \item В противном случае мантисса результата увеличивается на единицу $\MantissOf{q}\gets(\MantissOf{q}+1)$, что может повлечь одно из следующих взаимоисключающих последствий.
+        \begin{itemize}
+            \item Временное ПРС мантиссы (возникает, если $\MantissOf{q}>0$ до округления). Для коррекции мантисса сдвигается вправо, а порядок увеличивается на единицу. Возможно ПРС.
+            
+            \item Потеря нормализации мантиссы (возникает, если $\MantissOf{q}<0$ до округления). Для коррекции мантисса сдвигается влево, а порядок на единицу уменьшается. Возможно ПМР.
+            
+            \item Ни ПРС мантиссы, ни потери нормализации не возникнет. Никаких действий по коррекции не требуется.
+        \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+
+\subsection{Примеры}
+
+\begin{frame}
+    \frametitle{Деление $(-27)/(-9)$}
+    \framesubtitle{Представление}
+
+    \[
+        \begin{tabular}{rcc}
+           -27 & = & \FloatMyDcOrderX{100101}{0}{101}\\
+            -9 & = & \FloatMyDcOrderX{101110}{0}{100}\\
+        \end{tabular}
+    \]
+    
+    Предварительный порядок частного:
+    \(\OrderOf{q}=5-4=1.\)
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $(-27)/(-9)$}
+    \framesubtitle{Деление мантисс I-м способом}
+    
+    \resizebox{.98\textwidth}{!}{
+        \begin{tabular}{l|r|r|l}
+            \hline\hline
+            Частное $\MantissOf{q}, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{.,....0}
+                & \Number{11,00101}
+                    & \Number{11,01110}
+                        & операнды;\\ \hline\hline
+            \Number{.,...01}
+                & \Number{11,00101+00,10010=11,10111}
+                    & 
+                        & $-d$; $S(\Delta_1)=S(d)$;\\ \hline
+            \Number{.,..010}
+                & \Number{11,0111.+00,10010=00,00000}
+                    & 
+                        & $-d$; $S(\Delta_2)\not=S(d)$; $\Delta=0$!!!\\ \hline
+            \Number{.,.0101}
+                & \Number{00,0000.+11,01110=11,01110}
+                    & 
+                        & $+d$; $S(\Delta_3)=S(d)$;\\ \hline
+            \Number{.,01011}
+                & \Number{10,1110.+00,10010=11,01110}
+                    & 
+                        & $-d$; $S(\Delta_4)=S(d)$;\\ \hline
+            \Number{0,10111}
+                & \Number{10,1110.+00,10010=11,01110}
+                    & 
+                        & $-d$; $S(\Delta_5)=S(d)$;\\ 
+                & 
+                    & 
+                        & $\MantissOf{q}$ нормал.: $\OrderOf{q}\gets(\OrderOf{q}+1)$;\\ 
+                & 
+                    & 
+                        & Р-т отсеч. $\OrderOf{q}=2$.\\ 
+                            \hline\hline
+            \Number{0,10111(+1)}
+                & \Number{10,1110.+00,10010=11,01110}
+                    & 
+                        & $-d$; $S(\Delta_6)=S(d)$; \\
+                & 
+                    & 
+                        & $\MantissOf{q}\gets(\MantissOf{q}+1)$;\\ \hline
+            \Number{0,11000}
+                & 
+                    & 
+                        & Р-т округл.; $\OrderOf{q}=2$.
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $(-27)/(-9)$}
+    \framesubtitle{Оценка результата}
+        
+    Результат с отсечением:
+    \[
+        \begin{tabular}{rcc}
+           2.875 & = & \FloatMyDcOrderX{010111}{0}{010}
+        \end{tabular}
+    \]
+    дает абсолютную погрешность $\Delta=|3-2.875|=0.125$ и относительную $\delta=0.125/3\approx 0.041$.
+    
+    Результат с округлением оказывается точным:
+    \[
+        \begin{tabular}{rcc}
+           3 & = & \FloatMyDcOrderX{011000}{0}{010}
+        \end{tabular}
+    \]
+\end{frame}
+
+% 
+\begin{frame}
+    \frametitle{Деление $(19)/(-25)$}
+    \framesubtitle{Представление}
+
+    \[
+        \begin{tabular}{rcc}
+            19 & = & \FloatMyDcCharX{010011}{1101}\\
+           -25 & = & \FloatMyDcCharX{100111}{1101}
+        \end{tabular}
+    \]
+    
+    Предварительная характеристика частного:
+    \(\CharOf{q}=13-13+8=8.\)
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $(19)/(-25)$}
+    \framesubtitle{Деление мантисс I-м способом}
+    
+    \resizebox{.98\textwidth}{!}{
+        \begin{tabular}{l|r|r|l}
+            \hline\hline
+            Частное $\MantissOf{q}, \leftarrow$ 
+                & \multicolumn{1}{|c|}{дел-е, $\Delta$ $\leftarrow$}
+                    & \multicolumn{1}{|c|}{дел-ль, $d$}
+                        & прим. \\ 
+            \hline\hline
+            \Number{.,....1}
+                & \Number{00,10011}
+                    & \Number{11,00111}
+                        & операнды;\\ \hline\hline
+            \Number{.,...11}
+                & \Number{00,10011+11,00111=11,11010}
+                    & 
+                        & $+d$; $S(\Delta_1)=S(d)$;\\ \hline
+            \Number{.,..110}
+                & \Number{11,1010.+00,11001=00,01101}
+                    & 
+                        & $-d$; $S(\Delta_2)\not=S(d)$;\\ \hline
+            \Number{.,.1100}
+                & \Number{00,1101.+11,00111=00,00001}
+                    & 
+                        & $+d$; $S(\Delta_3)\not=S(d)$;\\ \hline
+            \Number{.,11001}
+                & \Number{00,0001.+11,00111=11,01001}
+                    & 
+                        & $+d$; $S(\Delta_4)=S(d)$;\\ \hline
+            \Number{1,10011}
+                & \Number{10,1001.+00,11001=11,01011}
+                    & 
+                        & $-d$; $S(\Delta_5)=S(d)$;\\ 
+                & 
+                    & 
+                        & $\MantissOf{q}$ ненорм.! Еще шаг!\\ \hline
+            \Number{1,00111}
+                & \Number{10,1011.+00,11001=11,01111}
+                    & 
+                        & $-d$; $S(\Delta_6)=S(d)$;\\ 
+                & 
+                    & 
+                        & Р-т отсеч. $\CharOf{q}=8$;\\ \hline\hline
+            \Number{1,00111(+1)}
+                & \Number{10,1111.+00,11001=11,10111}
+                    & 
+                        & $-d$; $S(\Delta_7)=S(d)$;\\ 
+                & 
+                    & 
+                        & $\MantissOf{q}\gets(\MantissOf{q}+1)$;\\ \hline
+            \Number{1,01000}
+                & 
+                    & 
+                        & Р-т округл.; $\CharOf{q}=8$.
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Деление $(19)/(-25)$}
+    \framesubtitle{Оценка результата}
+        
+    Результат с отсечением:
+    \[
+        \begin{tabular}{rcc}
+           -0.78125 & = & \FloatMyDcCharX{100111}{1000}
+        \end{tabular}
+    \]
+    дает абсолютную погрешность $\Delta=|0.76-0.78125|=0.02125$ и относительную $\delta=0.02125/0.76\approx 0.028$.
+    
+    Результат с округлением оказывается точнее:
+    \[
+        \begin{tabular}{rcc}
+           -0,75 & = & \FloatMyDcCharX{101000}{1000}
+        \end{tabular}
+    \]
+    дает абсолютную погрешность $\Delta=|0.76-0.75|=0.01$ и относительную $\delta=0.01/0.76\approx 0.013$.
+\end{frame}
+
+\appendix
+
+
+\section{Задания на практику}
+
+
+\subsection{Проходное}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Выполнить деление чисел (выбрав формат с плавающей точкой самостоятельно):
+    \begin{enumerate}
+        \item $25/5$, первым способом без восстановления остатков;
+
+        \item $39/10$, вторым способом без восстановления остатков.
+    \end{enumerate}
+\end{frame}
+
+
+\subsection{Мегамозг}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Подобрать пример, когда в результате округления возникает временное ПРС мантиссы.
+\end{frame}
+
+\section{Самообучение}
+
+\begin{frame}
+    \frametitle{Советы самоучке}
+
+    Обязательно следует ознакомиться со стандартом арифметики с плавающей точкой \cite{IEEE:754}.
+    
+    Представление чисел в формате с плавающей точкой и их обработка обсуждаются в \cite{bib:saveliev:automateTheory, bib:lisikov:automateBase}.
+    
+    В сети Интернет можно найти интересные (порой фантастически интересные) статьи о особенностях работы с плавающей точкой, сводящиеся к тезису <<а Вы не забыли, что фиксирована относительная погрешность, а не абсолютная?>>.
+    
+    В любом учебнике по численным методам также должен обсуждаться вопрос представления чисел.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Библиография}
+    \bibliographystyle{gost780u}
+    \bibliography{./../../../bibliobase}
+\end{frame}
+
+\end{document}
+
+
+
+

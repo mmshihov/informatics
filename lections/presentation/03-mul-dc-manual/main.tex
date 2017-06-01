@@ -1,0 +1,533 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[Умножение в ДК (РК)]{Умножение в дополнительном коде\\(с ручной коррекцией)}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+\begin{frame}<presentation>
+    \frametitle{Содержание}
+    \tableofcontents
+\end{frame}
+
+
+\section{Обоснование корректности}
+
+
+\subsection{Точка зрения на дополнительный код}
+
+
+\begin{frame}
+    \frametitle{Точка зрения на дополнительный код}
+
+    С помощью дополнительного кода в $n$-разрядной сетке можно представить целые числа из отрезка
+    \[
+        X \in [-2^{n-1},+(2^{n-1}-1)].
+    \]
+
+    В этом случае:
+    \[
+        \DC{X} = 
+        \begin{cases}
+            |X|,      & \text{если $X\geq 0$},\\
+            2^n-|X|,  & \text{если $X < 0$}.\\
+        \end{cases}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Масштабированный дополнительный код}
+
+    Если выполнить масштабирование с масштабом $M=2^n$:
+    \[
+        X = x \cdot 2^n.
+    \]
+     
+    Тогда:
+    \[
+        \DC{X} = 
+        \begin{cases}
+            |x|\cdot 2^n,      & \text{если $X\geq 0$},\\
+            (1-|x|)\cdot 2^n,    & \text{если $X < 0$}.\\
+        \end{cases}
+    \]
+    
+    Для дробных представлений $x$ справедливо:
+    \begin{equation}
+        \DC{x} = 
+        \begin{cases}
+            |x|,      & \text{если $x\geq 0$},\\
+            1-|x|,    & \text{если $x < 0$}.\\
+        \end{cases}
+        \label{eq:ch:mult:sct:dcmanual:dc}
+    \end{equation}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Дополнительный код --- положительное число?!}
+
+    Согласно формуле \eqref{eq:ch:mult:sct:dcmanual:dc} дополнительный код после масштабирования можно рассматривать как 
+    
+    \begin{block}{}
+        \begin{center}
+            \emph{положительное} дробное число.
+        \end{center}
+    \end{block}
+    
+    Так как $X \in [-2^{n-1},+(2^{n-1}-1)]$, то $x \in [-2^{-1}, \leq +(2^{-1} - 2^{-n})]$, следовательно 
+    \[(1-|x|) > 0.\] 
+    
+    Поэтому основной цикл умножения масштабированных представлений дополнительных кодов 
+    \begin{block}{}
+        \begin{center}
+            нужно выполнять по правилам перемножения \emph{беззнаковых} чисел.
+        \end{center}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    Пусть
+    \begin{align*}
+        A = a \cdot 2^n,\\
+        B = b \cdot 2^n,
+    \end{align*}
+    далее выполняются операции с дробными $a,b$.
+\end{frame}
+
+\subsection{Нужна коррекция}
+
+\begin{frame}
+    \frametitle{Коррекция псевдопроизведения $\DC{a}\cdot\DC{b}$}
+
+    \begin{itemize}
+        \item \emph{Оба сомножителя положительны}. Поправок не требуется.
+        
+        \item \emph{Один из сомножителей отрицателен}. Пусть $a<0$, $b\geq 0$, тогда правильный код результата: $\DC{ab}=(1-|ab|)$. Псевдопроизведение:
+        \[
+            \DC{a}\cdot\DC{b} = (1-|a|)\cdot|b|=|b|-|a|\cdot|b|.
+        \] 
+        
+        Нужна поправка: $(1-|b|)=\DC{-b}$. 
+        
+        \item \emph{Оба сомножителя отрицательны}. Правильный код результата: $\DC{ab}=|ab|$. Псевдопроизведение:
+        \[
+            \DC{a}\cdot\DC{b} = (1-|a|)(1-|b|)=1-|a|-|b|+|ab|
+        \] 
+        Прибавив поправку $(|a|+|b|)$, получим $(1+|ab|)$, который, вследствие переноса единицы в целую часть, эквивалентен правильному $|ab|$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Резюме: $\DC{ab}=\ldots$}
+
+    \begin{itemize}
+        \item $a\geq 0, b\geq 0$:       
+            $\DC{ab}=\DC{a}\cdot\DC{b}$.
+        
+        \item $a\geq 0, b<0$:
+            $\DC{ab}=\DC{a}\cdot\DC{b} + \DC{-a}$.
+
+        \item $a<0, b\geq 0$:
+            $\DC{ab}=\DC{a}\cdot\DC{b} + \DC{-b}$.
+        
+        \item $a<0, b<0$:
+            $\DC{ab} = \DC{a}\cdot\DC{b}+\DC{-a}+\DC{-b}$.
+    \end{itemize}
+    \begin{block}{Упрощенное правило ручной коррекции}
+        Достаточно проверить знак каждого аргумента и, если этот аргумент отрицателен, то из псевдопроизведения \emph{вычитается парный} отрицательному аргумент:
+        \begin{columns}
+            \column{.3\textwidth}
+            \column{.7\textwidth}
+            \begin{algorithmic}[1]
+                \IF{$a<0$}
+                    \STATE{$\Machine{СЧП}:=\Machine{СЧП}-b$;}
+                \ENDIF
+                \IF{$b<0$}
+                    \STATE{$\Machine{СЧП}:=\Machine{СЧП}-a$;}
+                \ENDIF
+            \end{algorithmic}
+        \end{columns}
+    \end{block}
+\end{frame}
+
+
+\section{Коррекция вовремя}
+
+
+\subsection{Технические ограничения}
+
+\begin{frame}
+    \frametitle{Основные способы умножения}
+    \begin{center}
+        \begin{tabular}{c||c||c}
+                & Сдвиг СЧП
+                    & Сдвиг множимого\\
+            \hline\hline
+            \rotatebox{90}{\texttt{shr}(Мн-ль)}
+                & \includegraphics[width=.43\textwidth]{fig/mult-methods.1}
+                    & \includegraphics[width=.43\textwidth]{fig/mult-methods.2}\\
+            \hline\hline
+            \rotatebox{90}{\texttt{shl}(Мн-ль)}
+                & \includegraphics[width=.43\textwidth]{fig/mult-methods.3}
+                    & \includegraphics[width=.43\textwidth]{fig/mult-methods.4}\\
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{block}{}
+        \begin{center}
+            Коррекции подлежит \emph{старшая} половина $2n$ разрядного псевдопроизведения\footnote{$n$-разрядные множимое и множитель вычитаются из \emph{старшей} половины псевдопроизведения}.
+        \end{center}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{I-й способ: технические ограничения}
+    
+    \begin{columns}
+        \column{.4\textwidth}
+            \begin{block}{}
+                \includegraphics[width=\columnwidth]{fig/mult-methods.1}            
+            \end{block}
+        \column{.55\textwidth}
+            \begin{block}{Особенности I-го способа}
+                \begin{itemize}
+                    \item СЧП сдвигается вправо; 
+                    \item Множимое прибавляется к старшей половине СЧП;
+                    \item Множимое не сдвигается.
+                \end{itemize}
+            \end{block}
+    \end{columns}
+    
+    \begin{itemize}
+        \item Коррекция выполняется \emph{только в конце} цикла умножения. В противном случае все поправки <<уедут>> в младшие разряды СЧП.
+        \item Исходное значение множителя нужно \emph{сохранять}.
+    \end{itemize}
+    Так как в цикле умножения к СЧП прибавляется половина множимого, а при коррекции нужно вычесть \emph{целое} множимое, то можно изменить алгоритм: в цикле прибавлять к СЧП \emph{целое} множимое (при этом СЧП в конце цикла окажется \emph{вдвое больше} правильного результата) и сдвинуть всю СЧП перед корреркцией.
+\end{frame}    
+
+\begin{frame}
+    \frametitle{II-й способ: технические ограничения}
+    
+    \begin{columns}
+        \column{.4\textwidth}
+            \begin{block}{}
+                \includegraphics[width=\columnwidth]{fig/mult-methods.2}
+            \end{block}
+        \column{.55\textwidth}
+            \begin{block}{Особенности II-го способа}
+                \begin{itemize}
+                    \item СЧП не сдвигается; 
+                    \item Множимое заносится в младшую часть $2n$-разрадного регистра.
+                    \item Множимое сдвигается влево;
+                \end{itemize}
+            \end{block}
+    \end{columns}
+    
+    \begin{itemize}
+        \item Поправка множителем может выполняться как в начале (проще всего), так и в конце цикла умножения. В конце цикла сложнее --- нужно сохранять множитель.
+        \item Поправка множимым без дополнительных затрат выполняется в конце цикла, когда после серии сдвигов множимое выходит в старшую часть $2n$-разрядного регистра.
+    \end{itemize}
+\end{frame}    
+
+\begin{frame}
+    \frametitle{III-й способ: технические ограничения}
+    
+    \begin{columns}
+        \column{.4\textwidth}
+            \begin{block}{}
+                \includegraphics[width=\columnwidth]{fig/mult-methods.3}
+            \end{block}
+        \column{.55\textwidth}
+            \begin{block}{Особенности III-го способа}
+                \begin{itemize}
+                    \item СЧП сдвигается влево; 
+                    \item Множимое прибавляется к младшей половине $2n$-разрядной СЧП.
+                    \item Множимое сдвигается влево;
+                \end{itemize}
+            \end{block}
+    \end{columns}
+    
+    \begin{itemize}
+        \item Поправка множителем выполняется либо к младшей части СЧП в начале цикла умножения, либо в конце цикла --- к старшей части (при этом множитель нужно сохранять).
+        \item Поправка множимым без дополнительных затрат выполняется в начале цикла умножения. В конце цикла, после серии сдвигов СЧП, она станет правильной.
+    \end{itemize}
+\end{frame}    
+    
+\begin{frame}
+    \frametitle{IV-й способ: технические ограничения}
+    
+    \begin{columns}
+        \column{.4\textwidth}
+            \begin{block}{}
+                \includegraphics[width=\columnwidth]{fig/mult-methods.4}
+            \end{block}
+        \column{.55\textwidth}
+            \begin{block}{Особенности IV-го способа}
+                \begin{itemize}
+                    \item СЧП не сдвигается; 
+                    \item Множимое заносится в старшую часть $2n$-разрадного регистра.
+                    \item Множимое сдвигается вправо;
+                \end{itemize}
+            \end{block}
+    \end{columns}
+    
+    \begin{itemize}
+        \item Поправка множителем к старшей половине СЧП может выполняеться либо в начале цикла умножения, либо в конце (позаботившись о спасении исходного значения множителя от <<сдвиговой>> смерти).
+
+        \item Поправка множимим без дополнительных затрат выполняется до цикла умножения. После поправки выполняется сдвиг регистра множимого и цикл выполняется как обычно. 
+    \end{itemize}
+\end{frame}  
+
+
+\subsection{Примеры}
+
+\begin{frame}
+    \frametitle{Операнды для примеров}
+
+    В качестве примера будем перемножать числа $9$ и $11$ с различными комбинациями знаков. 
+    
+    Выбрав масштаб $M=2^5$, получим следующие представления:
+    
+    \begin{align*}
+        \DC{9}   & = \Number{,01001},\\
+        \DC{-9}  & = \Number{,10111},\\
+        \DC{11}  & = \Number{,01011},\\
+        \DC{-11} & = \Number{,10101}.
+    \end{align*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{I-способ: $-9\cdot 11$. $\DC{-99}=\Number{,11100 11101}$}
+
+    \resizebox{!}{0.8\height}{
+        \begin{tabular}{c|r|l}
+            \hline\hline
+            мн-ль $\rightarrow$ & 
+                                    \multicolumn{1}{|c|}{СЧП $\rightarrow$}       
+                                                            & прим. \\ 
+            \hline\hline
+            \NumberLo{,1011}{1} & \Addition{,00000 00000}
+                                           {,.0101 1....}
+                                           {,00101 10000} & +мн-е/2; сдвиг \\ \hline
+            \NumberLo{,.101}{1} & \Addition{,.0010 11000}                
+                                           {,.0101 1....}                
+                                           {,01000 01000} & +мн-е/2; сдвиг \\ \hline
+            \NumberLo{,..10}{1} & \Addition{,.0100 00100}                
+                                           {,.0101 1....}                
+                                           {,01001 10100} & +мн-е/2; сдвиг \\ \hline
+            \NumberLo{,...1}{0} &   \Number{,.0100 11010} & сдвиг        \\ \hline
+            \NumberLo{,....}{1} & \Addition{,..010 01101}
+                                           {,.0101 1....}
+                                           {,00111 11101} & +мн-е/2; Рез-т?\\ \hline\hline
+                                & \Addition{,00111 11101}
+                                           {,10101 .....}
+                                           {,11100 11101} & +\DC{-11}=\DC{-мн-е}; Рез-т!
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{I-способ (модиф.): $-9\cdot -11$. $\DC{99}=\Number{,00011 00011}$}
+
+    \resizebox{!}{.7\height}{
+        \begin{tabular}{c|r|l}
+            \hline\hline
+            мн-ль $\rightarrow$ & 
+                                    \multicolumn{1}{|c|}{СЧП $\rightarrow$}       
+                                                            & прим. \\ 
+            \hline\hline
+            \NumberLo{,1011}{1} & \Addition{0,00000 00000}
+                                           {.,10101 .....}
+                                           {0,10101 00000} & +мн-е; сдвиг \\ \hline
+            \NumberLo{,.101}{1} & \Addition{.,01010 10000}                
+                                           {.,10101 .....}                
+                                           {0,11111 10000} & +мн-е; сдвиг \\ \hline
+            \NumberLo{,..10}{1} & \Addition{.,01111 11000}                
+                                           {.,10101 .....}                
+                                           {1,00100 11000} & +мн-е; сдвиг \\ \hline
+            \NumberLo{,...1}{0} &   \Number{.,10010 01100} & сдвиг        \\ \hline
+            \NumberLo{,....}{1} & \Addition{.,.1001 00110}
+                                           {.,10101 .....}
+                                           {0,11110 00110} & +мн-е; сдвиг;\\ \hline
+                                &   \Number{.,01111 00011} & Рез-т?       \\ \hline\hline
+                                & \Addition{.,01111 00011}
+                                           {.,01011 .....}
+                                           {0,11010 00011} & +\DC{11}=\DC{-мн-е};    \\ \hline
+                                & \Addition{0,11010 00011}
+                                           {.,01001 .....}
+                                           {1,00011 00011} & +\DC{9}=\DC{-мн-ль}; Рез-т!
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{II-способ: $-9\cdot -11$. $\DC{99}=\Number{,00011 00011}$}
+
+    \resizebox{!}{.7\height}{
+        \begin{tabular}{c|r|r|l}
+                                                                       \hline\hline
+            мн-ль $\rightarrow$ 
+                                & \multicolumn{1}{|c|}{мн-е $\leftarrow$}       
+                                                        & \multicolumn{1}{|c|}{СЧП}       
+                                                                                      & прим. \\ \hline\hline
+            \Number{,10111}     &                       & \Addition {,00000 00000} 
+                                                                    {,01001 .....}
+                                                                    {,01001 00000} & +\DC{9}=\DC{-мн-ль};\\ \hline\hline
+            \NumberLo{,1011}{1} & \Number{,..... 10101} & \Addition {,01001 00000} 
+                                                                    {,..... 10101}
+                                                                    {,01001 10101} & +мн-е; сдвиг\\ \hline
+            \NumberLo{,.101}{1} & \Number{,....1 0101.} & \Addition {,01001 10101} 
+                                                                    {,....1 0101.}
+                                                                    {,01010 11111} & +мн-е; сдвиг\\ \hline
+            \NumberLo{,..10}{1} & \Number{,...10 101..} & \Addition {,01010 11111} 
+                                                                    {,...10 101..}
+                                                                    {,01101 10011} & +мн-е; сдвиг\\ \hline
+            \NumberLo{,...1}{0} & \Number{,..101 01...} &                          & сдвиг\\ \hline
+            \NumberLo{,....}{1} & \Number{,.1010 1....} & \Addition {,01101 10011} 
+                                                                    {,.1010 1....}
+                                                                    {,11000 00011} & +мн-е; Рез-т?\\ \hline\hline
+                                & \Number{,10101 .....} & \Addition {,11000 00011} 
+                                                                    {,01011 .....}
+                                                                    {,00011 00011} & +\DC{11}=\DC{-мн-е}; Рез-т!
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{III-способ: $-11\cdot -9$. $\DC{99}=\Number{,00011 00011}$}
+
+    \resizebox{!}{.7\height}{
+        \begin{tabular}{c|r|l}
+                                                                       \hline\hline
+            мн-ль $\leftarrow$ 
+                                   & \multicolumn{1}{|c|}{СЧП $\leftarrow$}       
+                                                               & прим.      \\ \hline\hline
+                                   & \Addition{,00000 00000}
+                                              {,..... 01001}
+                                              {,00000 01001} & +\DC{9}=\DC{-мн-е};\\ \hline
+                                   & \Addition{,00000 01001}
+                                              {,..... 01011}
+                                              {,00000 10100} & +\DC{11}=\DC{-мн-ль};\\ \hline
+                                   &   \Number{,00001 0100.} & сдвиг        \\ \hline\hline
+            \NumberMid{,}{1}{0101} & \Addition{,00001 0100.}
+                                              {,..... 10111}
+                                              {,00001 11111} & +мн-е; сдвиг \\ \hline
+            \NumberMid{,}{0}{101.} &   \Number{,00011 1111.} & сдвиг        \\ \hline
+            \NumberMid{,}{1}{01..} & \Addition{,00111 111..}
+                                              {,..... 10111}
+                                              {,01000 10011} & +мн-е; сдвиг \\ \hline
+            \NumberMid{,}{0}{1...} &   \Number{,10001 0011.} & сдвиг        \\ \hline
+            \NumberMid{,}{1}{....} & \Addition{,00010 011..}
+                                              {,..... 10111}
+                                              {,00011 00011} & Рез-т!
+        \end{tabular}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{IV-способ:: $-11\cdot -9$. $\DC{99}=\Number{,00011 00011}$}
+
+    \resizebox{!}{.7\height}{
+        \begin{tabular}{c|r|r|l}
+                                                                       \hline\hline
+            мн-ль $\leftarrow$ 
+                                   & \multicolumn{1}{|c|}{мн-е $\rightarrow$}       
+                                                           & \multicolumn{1}{|c|}{СЧП}       
+                                                                                     & прим. \\ \hline\hline
+                                                                                     
+            \Number{,10101}        &                       & \Addition{,00000 00000} 
+                                                                      {,01011 .....}
+                                                                      {,01011 00000} & +\DC{11}=\DC{-мн-ль};\\ \hline
+                                   & \Number{,10111 .....} & \Addition{,01011 00000} 
+                                                                      {,01001 .....}
+                                                                      {,10100 00000} & +\DC{9}=\DC{-мн-е};сдвиг\\ \hline\hline
+            \NumberMid{,}{1}{0101} & \Number{,.1011 1....} & \Addition{,10100 00000} 
+                                                                      {,.1011 1....}
+                                                                      {,11111 10000} & +мн-е; сдвиг;\\ \hline
+            \NumberMid{,}{0}{101.} & \Number{,..101 11...} &                         & сдвиг\\ \hline
+            \NumberMid{,}{1}{01..} & \Number{,...10 111..} & \Addition{,11111 10000} 
+                                                                      {,...10 111..}
+                                                                      {,00010 01100} & +мн-е; сдвиг\\ \hline
+            \NumberMid{,}{0}{1...} & \Number{,....1 0111.} &                         & сдвиг\\ \hline
+            \NumberMid{,}{1}{....} & \Number{,..... 10111} & \Addition{,00010 01100} 
+                                                                      {,..... 10111}
+                                                                      {,00011 00011} & +мн-е; Рез-т\\ \hline
+        \end{tabular}
+    }
+\end{frame}
+
+
+\appendix
+
+
+\section{Задания на практику}
+
+
+\subsection{Проходное}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    Какая разрядность результата должна получиться, если дополнительные коды операндов занимают $n$ бит?
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+
+    Перемножить числа:
+
+    \begin{enumerate}
+        \item $26$ и $-13$ I-м способом; 
+        \item $-26$ и $13$ II-м способом; 
+        \item $-26$ и $-13$ III-м способом; 
+        \item $-13$ и $-26$ IV-м способом.
+    \end{enumerate}
+    
+    Обосновать выбор масштаба.
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    Прорешать одним из методов <<краевые>> случаи в $n$-разрядной сетке:
+    \begin{itemize}
+        \item $-2^n\cdot -2^n$;
+        \item $-2^n\cdot x$, где $x>0$;
+        \item $(2^n-1)\cdot(2^n-1)$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Модифицируйте схему умножения первым способом с учетом работы в ДК (можно использовать условный блок <<получение ДК>> и мультиплексор):
+    \begin{center}
+        \includegraphics{fig/mult-methods.5}
+    \end{center}
+\end{frame}
+
+\section{Самообучение}
+
+\begin{frame}
+    \frametitle{Советы самоучке}
+    
+    Рекомендуется почитать разделы посвященные работе с битами в \cite{bib:warren:algTriks}.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Библиография}
+    \bibliographystyle{gost780u}
+    \bibliography{./../../../bibliobase}
+\end{frame}
+
+\end{document}

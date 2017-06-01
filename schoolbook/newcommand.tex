@@ -1,0 +1,257 @@
+%определённые мной команды логической разметки
+\newcommand{\Signs}[2]{\fbox{{\small{\underbar{#1}}}{#2}}}
+\newcommand{\Sign}[1]{\fbox{#1}}
+\newcommand{\DC}[1]{\text{ДК}(#1)}
+\newcommand{\OC}[1]{\text{ОК}(#1)}
+\newcommand{\PC}[1]{\text{ПК}(#1)}
+
+\newcommand{\MyProc}{\text{$\mathbf{R}_8$}}
+
+\newboolean{IsNeedAnswer}
+\setboolean{IsNeedAnswer}{false} %true/false
+
+\newcommand{\Machine}[1]{\texttt{#1}}
+\newcommand{\Opcode}[1]{\texttt{\bf{#1}}}
+\newcommand{\Operand}[1]{\texttt{#1}}
+\newcommand{\CmdOneAddr}[2]{\text{\Opcode{#1} \Operand{#2}}}
+\newcommand{\CmdTwoAddr}[3]{\text{\Opcode{#1} \Operand{#2}, \Operand{#3}}}
+\newcommand{\CmdThreeAddr}[4]{\text{\Opcode{#1} {\Operand{#2}}, \Operand{#3}, \Operand{#4}}}
+
+\newcommand{\ProofAnswer}[1]{
+    \ifthenelse{\boolean{IsNeedAnswer}}{
+        \begin{proof}[Ответ]
+            #1
+        \end{proof}
+    }{}
+}
+
+\newcommand{\LabeledAnswer}[1]{
+    \ifthenelse{\boolean{IsNeedAnswer}}{
+        \emph{Отв.}: #1 \qed
+    }{}
+}
+
+\newcommand{\PlainAnswer}[1]{
+    \ifthenelse{\boolean{IsNeedAnswer}}{#1}{}
+}
+
+\newcommand{\UnsignedAny}[2]{\text{\upshape
+    \begin{tabular}{lr}
+        \tiny{#1} & \tiny{0}\\ 
+        \hline
+        \multicolumn{2}{|c|}{\texttt{#2}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\UnsignedByte}[1]{\UnsignedAny{7}{#1}}
+
+\newcommand{\UnsignedTwoBytes}[1]{\UnsignedAny{15}{#1}}
+
+\newcommand{\FixedAny}[4]{\text{\upshape
+    \begin{tabular}{clr}
+        \tiny{#1}  &\tiny{#2} & \tiny{0}\\ 
+        \hline
+        \multicolumn{1}{|c|}{\texttt{#3}} & \multicolumn{2}{|c|}{\texttt{#4}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FixedByte}[2]{\FixedAny{7}{6}{#1}{#2}}
+
+\newcommand{\FixedTwoBytes}[2]{\FixedAny{15}{14}{#1}{#2}}
+
+\newcommand{\SignedAny}[4]{\text{\upshape
+    \begin{tabular}{clr}
+        \tiny{#1}  &\tiny{#2} & \tiny{0}\\ 
+        \hline
+        \multicolumn{1}{|c|}{\Machine{#3}} & \multicolumn{2}{|c|}{\Machine{#4}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\SignedNibble}[2]{\SignedAny{3}{2}{#1}{#2}}
+
+\newcommand{\SignedByte}[2]{\SignedAny{7}{6}{#1}{#2}}
+
+\newcommand{\SignedTwoBytes}[2]{\SignedAny{15}{14}{#1}{#2}}
+
+\newcommand{\FloatMyHex}[4]{\text{\upshape
+    \begin{tabular}{clrclr}
+        \tiny{15}  &\tiny{14} & \tiny{6} & \tiny{5} & \tiny{4} & \tiny{0}\\ 
+        \hline
+        \multicolumn{1}{|c|}{\texttt{#1}} 
+            & \multicolumn{2}{|c|}{\texttt{#2}} 
+                & \multicolumn{1}{|c|}{\texttt{#3}} 
+                    & \multicolumn{2}{|c|}{\texttt{#4}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FloatMyCharHex}[3]{\text{\upshape
+    \begin{tabular}{clrlr}
+        \tiny{15}  &\tiny{14} & \tiny{6} & \tiny{5} & \tiny{0}\\ 
+        \hline
+        \multicolumn{1}{|c|}{\texttt{#1}} 
+            & \multicolumn{2}{|c|}{\texttt{#2}} 
+                & \multicolumn{2}{|c|}{\texttt{#3}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FloatMyDcMantCharHex}[2]{\text{\upshape
+    \begin{tabular}{lrlr}
+        \tiny{15} & \tiny{6} & \tiny{5} & \tiny{0}\\ 
+        \hline
+        \multicolumn{2}{|c|}{\texttt{#1}} 
+            & \multicolumn{2}{|c|}{\texttt{#2}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FloatESShort}[3]{\text{\upshape
+    \begin{tabular}{clrlr}
+        \tiny{31}  &\tiny{30} & \tiny{24} & \tiny{23} & \tiny{0}\\ 
+        \hline
+        \multicolumn{1}{|c|}{\texttt{#1}} 
+            & \multicolumn{2}{|c|}{\texttt{#2}} 
+                & \multicolumn{2}{|c|}{\texttt{#3}} 
+                    \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FloatPCShort}[3]{\text{\upshape
+    \begin{tabular}{clrlr}
+        \tiny{31}  &\tiny{30} & \tiny{23} & \tiny{22} & \tiny{0}\\ 
+        \hline
+        \multicolumn{1}{|c|}{\texttt{#1}} 
+            & \multicolumn{2}{|c|}{\texttt{#2}} 
+                & \multicolumn{2}{|c|}{\texttt{#3}} 
+                    \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FloatMyOrderX}[4]{\text{\upshape
+    \begin{tabular}{clrclr}
+        \tiny{9}  &\tiny{8} & \tiny{4} & \tiny{3} & \tiny{2} & \tiny{0}\\ 
+        \hline
+        \multicolumn{1}{|c|}{\texttt{#1}} 
+            & \multicolumn{2}{|c|}{\texttt{#2}} 
+                & \multicolumn{1}{|c|}{\texttt{#3}} 
+                    & \multicolumn{2}{|c|}{\texttt{#4}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FloatMyCharX}[3]{\text{\upshape
+    \begin{tabular}{clrlr}
+        \tiny{9}  &\tiny{8} & \tiny{4} & \tiny{3} & \tiny{0}\\ 
+        \hline
+        \multicolumn{1}{|c|}{\texttt{#1}} 
+            & \multicolumn{2}{|c|}{\texttt{#2}} 
+                & \multicolumn{2}{|c|}{\texttt{#3}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FloatMyDcOrderX}[3]{\text{\upshape
+    \begin{tabular}{lrclr}
+        \tiny{9} & \tiny{4} & \tiny{3} & \tiny{2} & \tiny{0}\\ 
+        \hline
+        \multicolumn{2}{|c|}{\texttt{#1}} 
+            & \multicolumn{1}{|c|}{\texttt{#2}} 
+                & \multicolumn{2}{|c|}{\texttt{#3}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+\newcommand{\FloatMyDcCharX}[2]{\text{\upshape
+    \begin{tabular}{lrlr}
+        \tiny{9} & \tiny{4} & \tiny{3} & \tiny{0}\\ 
+        \hline
+        \multicolumn{2}{|c|}{\texttt{#1}} 
+            & \multicolumn{2}{|c|}{\texttt{#2}} \\ 
+        \hline
+    \end{tabular}
+}}
+
+
+%--- СПЕЦИФИЧНЫЕ ДЛЯ УМНОЖЕНИЯ КОМАНДЫ ---------------------------------------------------------------------------------------------
+
+
+\newcommand{\Number}[1]{
+    \texttt{#1}
+}
+
+\newcommand{\NumberHi}[2]{
+    \underline{\underline{\texttt{#1}}}\texttt{#2}
+}
+
+\newcommand{\NumberMid}[3]{
+    \texttt{#1}\underline{\underline{\texttt{#2}}}\texttt{#3}
+}
+
+\newcommand{\NumberLo}[2]{
+    \texttt{#1}\underline{\underline{\texttt{#2}}}
+}
+
+\newcommand{\Stack}[2]{
+    \begin{tabular}[t]{@{}r@{}}
+        {#1}\\ \hline
+        {#2}\\ 
+    \end{tabular}
+}
+
+\newcommand{\StackThree}[3]{
+    \begin{tabular}[t]{@{}r@{}}
+        {#1}\\ \hline
+        {#2}\\ \hline
+        {#3}\\
+    \end{tabular}
+}
+
+\newcommand{\StackFour}[4]{
+    \begin{tabular}[t]{@{}r@{}}
+        {#1}\\ \hline
+        {#2}\\ \hline
+        {#3}\\ \hline
+        {#4}\\
+    \end{tabular}
+}
+
+\newcommand{\Operation}[4]{
+    \begin{tabular}[t]{@{}r@{}}
+        \texttt{#4}
+        \begin{tabular}{@{}r@{}}
+            \Number{#1}\\
+            \Number{#2}\\ \hline
+        \end{tabular} \\ 
+        \Number{#3}\\
+    \end{tabular}
+}
+
+\newcommand{\Addition}[3]{\Operation{#1}{#2}{#3}{+}}
+
+\newcommand{\Subtraction}[3]{\Operation{#1}{#2}{#3}{-}}
+
+\newcommand{\Register}[2]{\Number{#1:#2}}
+
+\newcommand{\Mantiss}{m}
+\newcommand{\Order}{p}
+\newcommand{\Char}{c}
+
+\newcommand{\MantissOf}[1]{\Mantiss_{#1}}
+\newcommand{\OrderOf}[1]{\Order_{#1}}
+\newcommand{\CharOf}[1]{\Char_{#1}}
+
+\newcommand{\FloatExpression}[2]{\MantissOf{#1}\cdot {#2}^{\OrderOf{#1}}}
+
+\newcommand{\DivAnswer}[2]{(\texttt{$#1$ rem $#2$})}
+
+\newenvironment{Solve}[1]%
+    {\begin{proof}[Решение]#1}
+    {\end{proof}}
+    
+    

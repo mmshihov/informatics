@@ -1,0 +1,169 @@
+\subsection{Беззнаковое умножение}
+\label{ch:mult:sct:pc}
+
+Используется уже рассмотренный выше базовый алгоритм умножения <<столбиком>>.
+\begin{Example}\label{ex:binmul:pcI}
+    Множитель $25=(11001)_2$, множимое $23=(10111)_2$. Перемножить числа I-м способом.
+\end{Example}
+\begin{Solve}
+    Используется дробное масштабирование $M=2^5$:
+    \begin{align*}
+        25=\Number{,11001},\\
+        23=\Number{,10111}.
+    \end{align*}
+
+    Умножение чисел приведено на рисунке \ref{fig:binmul:pcI}. Результат: 
+    \begin{align*}
+        (.1000111111)_2\cdot 2^{10}=575.
+    \end{align*}
+    
+    Обратите внимание на временное ПРС --- перенос в разряд целой части, возникший на пятом шаге умножения. Чтобы его не терять, разрядность СЧП была увеличена на один разряд ($2\cdot5+1$), что было бы необязательно, если к СЧП в основном цикле умножения прибавлять не множимое, а половину (сдвинутое на разряд вправо) множимое. При таком подходе ПРС никогда не возникает, достаточно ровно $2n$ разрядов СЧП, и на последнем шаге сдвиг СЧП не выполняется.
+\end{Solve}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tabular}{c|r|l}
+                                                                   \hline\hline
+        множитель $\rightarrow$ & 
+                                \multicolumn{1}{|c|}{СЧП $\rightarrow$}       
+                                                        & примечание \\ \hline\hline
+        \NumberLo{,1100}{1} & \Addition{.,00000 00000}
+                                       {.,10111 .....}
+                                       {0,10111 00000} & приб. мн-е; сдвиг\\ \hline
+        \NumberLo{,.110}{0} &   \Number{.,01011 10000} & сдвиг\\ \hline
+        \NumberLo{,..11}{0} &   \Number{.,00101 11000} & сдвиг\\ \hline
+        \NumberLo{,...1}{1} & \Addition{.,00010 11100}
+                                       {.,10111 .....}
+                                       {0,11001 11100} & приб. мн-е; сдвиг\\ \hline
+        \NumberLo{,....}{1} & \Addition{.,01100 11110}
+                                       {.,10111 .....}
+                                 {\fbox{1},00011 11110} & приб. мн-е; сдвиг\\ \hline
+        \NumberLo{,....}{.} &   \Number{.,10001 11111} & модуль р-та!\\
+    \end{tabular}
+    \caption{Беззнаковое умножение $25\times 23$ (I сп., к примеру \ref{ex:binmul:pcI})}
+    \label{fig:binmul:pcI}
+\end{figure}
+
+
+\begin{Example}\label{ex:binmul:pcII}
+    Множитель $25=(11001)_2$, множимое $23=(10111)_2$. Перемножить числа II-м способом.
+\end{Example}
+\begin{Solve}
+    Используется дробное масштабирование $M=2^5$:
+    \begin{align*}
+        25=\Number{,11001},\\
+        23=\Number{,10111}.
+    \end{align*}
+
+    Умножение чисел приведено на рисунке \ref{fig:binmul:pcII}. Результат: 
+    \begin{align*}
+        (.1000111111)_2\cdot 2^{10}=575.
+    \end{align*}
+\end{Solve}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tabular}{c|r|r|l}
+                                                                   \hline\hline
+        множитель $\rightarrow$ 
+                            & \multicolumn{1}{|c|}{множимое $\leftarrow$}       
+                                                     & \multicolumn{1}{|c|}{СЧП}       
+                                                                                  & примечание \\ \hline\hline
+        \NumberLo{,1100}{1} & \Number{,..... 10111} & \Addition {,00000 00000} 
+                                                                {,..... 10111}
+                                                                {,00000 10111} & приб. мн-е; сдвиг\\ \hline
+        \NumberLo{,.110}{0} & \Number{,....1 0111.} &                           & сдвиг\\ \hline
+        \NumberLo{,..11}{0} & \Number{,...10 111..} &                           & сдвиг\\ \hline
+        \NumberLo{,...1}{1} & \Number{,..101 11...} & \Addition {,00000 10111} 
+                                                                {,..101 11...}
+                                                                {,00110 01111} & приб. мн-е; сдвиг\\ \hline
+        \NumberLo{,....}{1} & \Number{,.1011 1....} & \Addition {,00110 01111} 
+                                                                {,.1011 1....}
+                                                                {,10001 11111} & модуль р-та!\\
+    \end{tabular}
+    \caption{Беззнаковое умножение $25\times 23$ (II сп., к примеру \ref{ex:binmul:pcII})}
+    \label{fig:binmul:pcII}
+\end{figure}
+
+
+\begin{Example}\label{ex:binmul:pcIII}
+    Множитель $25=(11001)_2$, множимое $23=(10111)_2$. Перемножить числа III-м способом.
+\end{Example}
+\begin{Solve}
+    Используется дробное масштабирование $M=2^5$:
+    \begin{align*}
+        25=\Number{,11001},\\
+        23=\Number{,10111}.
+    \end{align*}
+
+    Умножение чисел приведено на рисунке \ref{fig:binmul:pcIII}. Результат: 
+    \begin{align*}
+        (.1000111111)_2\cdot 2^{10}=575.
+    \end{align*}
+\end{Solve}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tabular}{c|r|l}
+                                                                   \hline\hline
+        множитель $\leftarrow$ 
+                                & \multicolumn{1}{|c|}{СЧП $\leftarrow$}       
+                                                           & примечание\\ \hline\hline
+        \NumberMid{,}{1}{1001} & \Addition{,00000 00000}
+                                          {,..... 10111}
+                                          {,00000 10111} & приб. мн-е; сдвиг\\ \hline
+        \NumberMid{,}{1}{001.} & \Addition{,00001 0111.}
+                                          {,..... 10111}
+                                          {,00010 00101} & приб. мн-е; сдвиг\\ \hline
+        \NumberMid{,}{0}{01..} &   \Number{,00100 0101.} & сдвиг\\ \hline
+        \NumberMid{,}{0}{1...} &   \Number{,01000 101..} & сдвиг\\ \hline
+        \NumberMid{,}{1}{....} & \Addition{,10001 01...}
+                                          {,..... 10111}
+                                          {,10001 11111} & модуль р-та!\\ 
+    \end{tabular}
+    \caption{Беззнаковое умножение $25\times 23$ (III сп., к примеру \ref{ex:binmul:pcIII})}
+    \label{fig:binmul:pcIII}
+\end{figure}
+
+
+\begin{Example}\label{ex:binmul:pcIV}
+    Множитель $25=(11001)_2$, множимое $23=(10111)_2$. Перемножить числа IV-м способом.
+\end{Example}
+\begin{Solve}
+    Используется дробное масштабирование с множителем $2^5$:
+    \begin{align*}
+        25=\Number{,11001},\\
+        23=\Number{,10111}.
+    \end{align*}
+
+    Умножение чисел приведено на рисунке \ref{fig:binmul:pcIV}. Результат: 
+    \begin{align*}
+        (.1000111111)_2\cdot 2^{10}=575.
+    \end{align*}
+    
+    Следует обратить внимание на множимое, которое на первом шаге уже сдвинуто на один разряд вправо.
+\end{Solve}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tabular}{c|r|r|l}
+                                                                   \hline\hline
+        множитель $\leftarrow$ 
+                               & \multicolumn{1}{|c|}{множимое $\rightarrow$}       
+                                                       & \multicolumn{1}{|c|}{СЧП}       
+                                                                                 & примечание \\ \hline\hline
+        \NumberMid{,}{1}{1001} & \Number{,.1011 1....} & \Addition{,00000 00000} 
+                                                                  {,.1011 1....}
+                                                                  {,01011 10000} & приб. мн-е; сдвиг;\\ \hline
+        \NumberMid{,}{1}{001.} & \Number{,..101 11...} & \Addition{,01011 10000} 
+                                                                  {,..101 11...}
+                                                                  {,10001 01000} & приб. мн-е; сдвиг\\ \hline
+        \NumberMid{,}{0}{01..} & \Number{,...10 111..} &                         & сдвиг\\ \hline
+        \NumberMid{,}{0}{1...} & \Number{,....1 0111.} &                         & сдвиг\\ \hline
+        \NumberMid{,}{1}{....} & \Number{,..... 10111} & \Addition{,10001 01000} 
+                                                                  {,..... 10111}
+                                                                  {,10001 11111} & модуль р-та!\\
+    \end{tabular}
+    \caption{Беззнаковое умножение $25\times 23$ (IV сп., к примеру \ref{ex:binmul:pcIV})}
+    \label{fig:binmul:pcIV}
+\end{figure}

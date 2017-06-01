@@ -1,0 +1,176 @@
+\section{Программирование на ассемблере \MyProc}
+\label{ch::programming}
+
+В данном разделе приводятся сведения, как можно реализовать некоторые операторы языков высокого уровня на языке ассемблера {\MyProc}. Эти сведения носят справочный характер и не означают того, что, программируя на ассемблере, следует мыслить конструкциями ЯВУ.
+
+
+\subsection{Условные переходы}
+
+Логика работы команды условного перехода проста: если оговоренное условие истинно, то выполняется переход, иначе выполняется следующая за командой перехода команда. Например, для команды \Opcode{jz} (<<если 0>>):
+\begin{algorithmic}[1]
+    \STATE{\CmdTwoAddr{jz}{r1}{LabelR1isZ}}
+    \STATE{}\COMMENT{если $\Operand{r1}\neq 0$, то выполнятся эти команды}
+    \STATE{\Operand{LabelR1isZ:}} \COMMENT{сюда выполняется переход, если $\Operand{r1}=0$}
+\end{algorithmic}
+
+Если нужен переход по инверсному условию, (в данном примере \Opcode{jnz} --- <<если не 0>>), то можно это сделать на основе имеющейся команды:
+\begin{algorithmic}[1]
+    \STATE{\CmdTwoAddr{jz}{r1}{LabelR1isZ}}
+    \STATE{\CmdTwoAddr{jz}{0}{LabelR1isNotZ}} \COMMENT{безусловный переход!}
+    \STATE{\Operand{LabelR1isZ:}} 
+    \STATE{}\COMMENT{делаем что-то, при $\Operand{r1}=0$}
+    \STATE{\Operand{LabelR1isNotZ:}} \COMMENT{инверсный переход! Выполняется, если $\Operand{r1}\neq 0$}
+\end{algorithmic}
+
+
+\subsection{Аналоги условных операторов ЯВУ}
+
+Условный оператор на языке высокого уровня
+\begin{algorithmic}[1]
+    \IF {$\Operand{r1}=0$}
+        \STATE{} \COMMENT{делаем что-то}
+    \ELSE
+        \STATE{} \COMMENT{делаем нечто}
+    \ENDIF
+\end{algorithmic}
+
+на ассемблере {\MyProc} может быть реализован с помощью следующих команд:
+\begin{algorithmic}[1]
+    \STATE{\CmdTwoAddr{jz}{r1}{LabelFoo}}
+    \STATE{}\COMMENT{делаем нечто}
+    \STATE{\CmdTwoAddr{jz}{0}{LabelEndIf}}
+    \STATE{\Operand{LabelFoo:}} 
+    \STATE{}\COMMENT{делаем что-то}
+    \STATE{\Operand{LabelEndIf:}} 
+\end{algorithmic}
+
+
+\subsection{Аналоги циклов ЯВУ}
+
+\subsubsection{Цикл while}
+
+На языке высокого уровня обычно выглядит следующим образом:
+\begin{algorithmic}[1]
+    \WHILE {$\Operand{r1}=0$}
+        \STATE{} \COMMENT{делаем нечто}
+    \ENDWHILE
+\end{algorithmic}
+
+На ассемблере он может быть реализован следующими командами:
+\begin{algorithmic}[1]
+    \STATE{\Operand{LabelWhileStart:}} 
+    \STATE{\CmdTwoAddr{jz}{r1}{LabelWhileBody}}
+    \STATE{\CmdTwoAddr{jz}{0}{LabelWhileEnd}}
+    \STATE{\Operand{LabelWhileBody:}} 
+    \STATE{}\COMMENT{делаем нечто}
+    \STATE{\CmdTwoAddr{jz}{0}{LabelWhileStart}}
+    \STATE{\Operand{LabelWhileEnd:}} 
+\end{algorithmic}
+
+
+\subsubsection{Цикл repeat}
+
+\begin{algorithmic}[1]
+    \REPEAT
+        \STATE{} \COMMENT{делаем нечто}
+    \UNTIL{$\Operand{r1}=0$}
+\end{algorithmic}
+
+на ассемблере:
+\begin{algorithmic}[1]
+    \STATE{\Operand{LabelRepeatStart:}} 
+    \STATE{}\COMMENT{делаем нечто}
+    \STATE{\CmdTwoAddr{jz}{r1}{LabelRepeatEnd}}
+    \STATE{\CmdTwoAddr{jz}{0}{LabelRepeatStart}}
+    \STATE{\Operand{LabelRepeatEnd:}} 
+\end{algorithmic}
+
+
+\subsubsection{Цикл for}
+
+\begin{algorithmic}[1]
+    \FOR{$\Operand{r1}\gets 0$ \Opcode{to} $n$}
+        \STATE{} \COMMENT{делаем нечто}
+    \ENDFOR
+\end{algorithmic}
+где $n$ --- число, на ассемблере может быть реализован следующим набором команд:
+
+\begin{algorithmic}[1]
+    \STATE{\CmdThreeAddr{add}{0}{0}{r1}}
+    \STATE{\Operand{LabelForStat:}} 
+    \STATE{\CmdThreeAddr{xor}{r1}{$n$}{r1}} \COMMENT{трюк: $\Operand{r1}\oplus n=0$, если $\Operand{r1}=n$}
+    \STATE{\CmdTwoAddr{jz}{r1}{LabelForEnd}}
+    \STATE{\CmdThreeAddr{xor}{r1}{$n$}{r1}} \COMMENT{трюк: восстанавливаем $\Operand{r1}=\Operand{r1}\oplus n\oplus n=\Operand{r1}\oplus 0$}
+    \STATE{}\COMMENT{делаем нечто}
+    \STATE{\CmdThreeAddr{add}{r1}{1}{r1}}
+    \STATE{\CmdTwoAddr{jz}{0}{LabelForStat}} 
+    \STATE{\Operand{LabelForEnd:}} 
+    \STATE{\CmdThreeAddr{xor}{r1}{$n$}{r1}} \COMMENT{если $\Operand{r1}=n$ нужен далее}
+\end{algorithmic}
+
+
+\subsection{Вычисление формул: распространение переноса}
+\label{ch:risc:p}
+
+При сложении беззнаковых целых чисел в $n$-разрядной сетке может возникнуть ситуация ПРС, когда теряется перенос из старшего разряда. Нужно уметь определять ситуацию ПРС, так как специальных средств в {\MyProc} для этого не предусмотрено.
+
+Пусть складываются числа $A$ и $B$ и перенос $c$:
+\[
+    A + B + c,
+\]
+где значение переноса $c$ либо 1, либо 0.
+
+Перенос возникнет, если оба старших разряда чисел $A,B$ равны 1. Также он возникает, если старшие разряды $A,B$ различны, а старший разряд суммы $A+B+c$ получается нулевым. После вычисления выражения
+\[
+    (A\& B)\lor ((A \lor B) \& \lnot(A + B + c))
+\]
+в старшем разряде результата получается значение бита переноса.
+
+Распределить при их нехватке регистры (или ячейки памяти) для хранения промежуточных результатов не такая уж и простая задача, даже если для всех операций находится подходящая команда:
+\[
+    \underbrace{
+        (\underbrace{
+            \overbrace{A}^\Operand{r1}
+            \& 
+            \overbrace{B}^\Operand{r2}
+        }_\Operand{r5 (6)})
+        \lor 
+        \underbrace{(
+            (\underbrace{
+                \overbrace{A}^\Operand{r1} 
+                \lor 
+                \overbrace{B}^\Operand{r2}
+            }_\Operand{r5 (4)})
+            \& 
+            \underbrace{
+                \lnot
+                (\underbrace{
+                    \underbrace{
+                        \overbrace{A}^\Operand{r1}
+                        + 
+                        \overbrace{B}^\Operand{r2}
+                    }_\Operand{r4 (1)}
+                    + 
+                    \overbrace{c}^\Operand{r3}
+                }_\Operand{r4 (2)})
+            }_\Operand{r6 (3)}
+        )}_\Operand{r6 (5)}
+    }_\Operand{r5 (7)},
+\]
+где в подписях под фигурными скобками --- регистр, сохраняющий результат промежуточных вычислений, и (в скобках) номер команды в приведенной ниже программе, вычисляющей результат сложения и бит переноса.
+
+\begin{algorithmic}[1]
+    \REQUIRE{\Operand{r1} --- $A$, \Operand{r2} --- $B$, \Operand{r3} --- $c\in\{0,1\}$}
+    \ENSURE{\Operand{r4} --- байт результата без переноса, \Operand{r5} --- перенос}
+    
+    \COMMENT{\Operand{r6} --- для промежуточных результатов}
+    \STATE{\CmdThreeAddr{add}{r1}{r2}{r4}} \COMMENT{$\Operand{r4}\gets A+B$}
+    \STATE{\CmdThreeAddr{add}{r3}{r4}{r4}} \COMMENT{$\Operand{r4}\gets A+B+c$, байт результата без переноса}
+    \STATE{\CmdTwoAddr{not}{r4}{r6}} \COMMENT{$\Operand{r6}\gets \lnot(A+B+c)$}
+    \STATE{\CmdThreeAddr{or}{r1}{r2}{r5}} \COMMENT{$\Operand{r5}\gets A\lor B$}
+    \STATE{\CmdThreeAddr{and}{r5}{r6}{r6}} \COMMENT{$\Operand{r6}\gets (A \lor B) \& \lnot(A + B + c)$}
+    \STATE{\CmdThreeAddr{and}{r1}{r2}{r5}} \COMMENT{$\Operand{r5}\gets A \& B$}
+    \STATE{\CmdThreeAddr{or}{r5}{r6}{r5}} \COMMENT{$\Operand{r5}\gets (A\& B)\lor ((A \lor B) \& \lnot(A + B + c))$}
+    \STATE{\CmdThreeAddr{rol}{r5}{1}{r5}} \COMMENT{признак переноса в 7-м бите r5}
+    \STATE{\CmdThreeAddr{and}{r5}{1}{r5}} \COMMENT{в r5 перенос: 0 или 1}
+\end{algorithmic}

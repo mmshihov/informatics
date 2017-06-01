@@ -1,0 +1,307 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[Умножение в ДК (АК)]{Умножение в дополнительном коде\\(с автоматической коррекцией)}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+\begin{frame}<presentation>
+    \frametitle{Содержание}
+    \tableofcontents
+\end{frame}
+
+
+\section{Обоснование корректности}
+
+
+\subsection{Структурная точка зрения на число}
+
+
+\begin{frame}
+    \frametitle{Точка зрения на число}
+
+    Положительное двоичное число будем рассматривать как 
+    \begin{block}{}
+        последовательность непрерывных групп единиц, разделённых непрерывными группами нулей. 
+    \end{block}
+    
+    Минимальная длина группы при этом будет равна одному символу.
+
+    \begin{block}{}
+        Рассмотрим группу:
+        \[
+            \Number{...0001111100...}
+        \]
+    \end{block}
+    
+    Соответствующее ей число можно получить как разность:
+    
+    \begin{block}{}
+        \[
+            \Subtraction{...0010000000...}
+                        {...0000000100...}
+                        {...0001111100...}
+        \]
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Вклады разрядов}
+
+    \[
+        \Subtraction{...0010000000...}
+                    {...0000000100...}
+                    {...0001111100...}
+    \]
+        
+    \begin{block}{}
+        Ненулевой вклад вносят только \emph{переходы из группы в группу}: 
+        \[\text{\Number{01} и \Number{10}}\]
+    \end{block}
+    
+    Обозначим пару разрядов, образующих переход $(a_i,a_{i-1})$. Тогда:
+    
+    \begin{block}{}
+        \begin{itemize}
+            \item переход $(a_i,a_{i-1})=\Number{01}$ вносит положительный вклад $2^i$, 
+            \item переход $(a_i,a_{i-1})=\Number{10}$ вносит отрицательный вклад $({-2^i})$.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+
+\subsection{Не нужна коррекция}
+
+\begin{frame}
+    \frametitle{Отрицательное число}
+    
+    Например, представление положительного числа $118$:
+    \[
+        \Number{...0001110110}
+    \] 
+    
+    Две группы вносят следующие вклады:
+    \begin{itemize}
+        \item первая группа вносит: $-2^1$ и $2^3$;
+        \item вторая: $-2^4$ и $2^7$.
+        \item \emph{итого:} $(2^7-2^4+2^3-2^1)=(128-16+8-2)=118.$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Отрицательное число? Дополнительный код}
+    
+    Инверсия разрядов числа $118$:
+    \[
+        \Number{...0001110110}
+    \] 
+    
+    не приводит к результату с противоположным знаком:
+    \[
+        \Number{...1110001001}
+    \] 
+    
+    \begin{itemize}
+        \item Ожидалось: $(-2^7+2^4-2^3+2^1)=(-128+16-8+2)=-118.$
+        \item Но?: $(-2^7+2^4-2^3+2^1-2^0)=(-128+16-8+2-1)=-119$.
+    \end{itemize}
+    
+    Корректируем на единицу:
+    \[
+        \Number{...1110001010}
+    \] 
+    
+    Получаем: $(-2^7+2^4-2^3+2^2-2^1)=(-128+16-8+4-2)=-118$.
+\end{frame}
+
+
+\section{Автоматичесая коррекция}
+
+
+\subsection{Технические ограничения}
+
+
+\subsection{Примеры}
+
+\begin{frame}
+    \frametitle{Операнды для примеров}
+
+    В качестве примера будем перемножать числа $9$ и $11$ с различными комбинациями знаков. 
+    
+    Выбрав масштаб $M=2^5$, получим следующие представления:
+    
+    \begin{align*}
+        \DC{9}   & = \Number{,01001}\\
+        \DC{-9}  & = \Number{,10111}\\
+        \DC{11}  & = \Number{,01011}\\
+        \DC{-11} & = \Number{,10101}
+    \end{align*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{I-способ: $-9\cdot 11$. $\DC{-99}=\Number{,11100 11101}$}
+
+    \begin{tabular}{c|r|l}
+        \hline\hline
+        мн-ль $\rightarrow$ & 
+                                \multicolumn{1}{|c|}{СЧП $\rightarrow$}       
+                                                        & прим. \\ 
+        \hline\hline
+        \NumberLo{,1011}{1|0} & \Addition{,00000 00000}
+                                         {,11010 1....}
+                                         {,11010 10000} & -мн-е/2; сдвиг; \\ \hline
+        \NumberLo{,.101}{1|1} &   \Number{,11101 01000} & сдвиг; \\ \hline
+        \NumberLo{,..10}{1|1} &   \Number{,11110 10100} & сдвиг; \\ \hline
+        \NumberLo{,...1}{0|1} & \Addition{,11111 01010}
+                                         {,.0101 1....}
+                                         {,00100 11010} & +мн-е/2; сдвиг; \\ \hline
+        \NumberLo{,....}{1|0} & \Addition{,00010 01101}
+                                         {,11010 1....}
+                                         {,11100 11101} & -мн-е/2; Рез-т!
+    \end{tabular}
+\end{frame}
+
+\begin{frame}
+    \frametitle{II-способ: $-9\cdot -11$. $\DC{99}=\Number{,00011 00011}$}
+
+    \begin{tabular}{c|r|r|l}
+                                                                   \hline\hline
+        мн-ль $\rightarrow$ 
+                            & \multicolumn{1}{|c|}{мн-е $\leftarrow$}       
+                                                    & \multicolumn{1}{|c|}{СЧП}       
+                                                                                  & прим. \\ \hline\hline
+        \NumberLo{,1011}{1|0} & \Number{,11111 10101} & \Addition {,00000 00000} 
+                                                                  {,00000 01011}
+                                                                  {,00000 01011} & -мн-е; сдвиг;\\ \hline
+        \NumberLo{,.101}{1|1} & \Number{,11111 0101.} &                          & сдвиг;\\ \hline
+        \NumberLo{,..10}{1|1} & \Number{,11110 101..} &                          & сдвиг;\\ \hline
+        \NumberLo{,...1}{0|1} & \Number{,11101 01...} & \Addition {,00000 01011} 
+                                                                  {,11101 01...}
+                                                                  {,11101 10011} & +мн-е; сдвиг;\\ \hline
+        \NumberLo{,....}{1|0} & \Number{,11010 1....} & \Addition {,11101 10011} 
+                                                                  {,00101 1....}
+                                                                  {,00011 00011} & -мн-е; Рез-т!\\ 
+    \end{tabular}
+\end{frame}
+
+\begin{frame}
+    \frametitle{III-способ: $11\cdot -9$. $\DC{-99}=\Number{,11100 11101}$}
+
+    \begin{tabular}{c|r|l}
+                                                                   \hline\hline
+        мн-ль $\leftarrow$ 
+                               & \multicolumn{1}{|c|}{СЧП $\leftarrow$}       
+                                                           & прим.      \\ \hline\hline
+        \NumberMid{,}{01}{011} & \Addition{,00000 00000}
+                                          {,11111 10111}
+                                          {,11111 10111} & +мн-е; сдвиг; \\ \hline
+        \NumberMid{,}{10}{11.} & \Addition{,11111 0111.}
+                                          {,..... 01001}
+                                          {,11111 10111} & -мн-е; сдвиг; \\ \hline
+        \NumberMid{,}{01}{1..} & \Addition{,11111 0111.}
+                                          {,11111 10111}
+                                          {,11111 00101} & +мн-е; сдвиг; \\ \hline
+        \NumberMid{,}{11}{...} &   \Number{,11110 0101.} &        сдвиг; \\ \hline
+        \NumberMid{,}{1.}{...} & \Addition{,11100 101..}
+                                          {,..... 01001}
+                                          {,11100 11101} & -мн-е; Рез-т!
+    \end{tabular}
+\end{frame}
+
+\begin{frame}
+    \frametitle{IV-способ:: $11\cdot 9$. $\DC{99}=\Number{,00011 00011}$}
+
+    \begin{tabular}{c|r|r|l}
+                                                                   \hline\hline
+        мн-ль $\leftarrow$ 
+                               & \multicolumn{1}{|c|}{мн-е $\rightarrow$}       
+                                                       & \multicolumn{1}{|c|}{СЧП}       
+                                                                                 & прим. \\ \hline\hline
+        \NumberMid{,}{01}{011} & \Number{,.0100 1....} & \Addition{,00000 00000} 
+                                                                  {,.0100 1....}
+                                                                  {,00100 10000} & +мн-е; сдвиг;\\ \hline
+        \NumberMid{,}{10}{11.} & \Number{,..010 01...} & \Addition{,00100 10000} 
+                                                                  {,11101 11...}
+                                                                  {,00010 01000} & -мн-е; сдвиг;\\ \hline
+        \NumberMid{,}{01}{1..} & \Number{,...01 001..} & \Addition{,00010 01000} 
+                                                                  {,...01 001..}
+                                                                  {,00011 01100} & +мн-е; сдвиг\\ \hline
+        \NumberMid{,}{11}{...} & \Number{,....0 1001.} &                         &        сдвиг;\\ \hline
+        \NumberMid{,}{1.}{...} & \Number{,..... 01001} & \Addition{,00011 01100} 
+                                                                  {,11111 10111}
+                                                                  {,00011 00011} & -мн-е; Рез-т!\\ \hline
+    \end{tabular}
+\end{frame}
+
+
+\subsection{Заключение}
+
+
+\appendix
+
+
+\section{Задания на практику}
+
+
+\subsection{Проходное}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    Какая разрядность результата должна получиться, если дополнительные коды операндов занимают $n$ бит?
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+
+    Перемножить числа:
+
+    \begin{enumerate}
+        \item $26$ и $-13$ I-м способом; 
+        \item $-26$ и $13$ II-м способом; 
+        \item $-26$ и $-13$ III-м способом; 
+        \item $-13$ и $-26$ IV-м способом.
+    \end{enumerate}
+    
+    Обосновать выбор масштаба.
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    Прорешать одним из методов <<краевые>> случаи в $n$-разрядной сетке:
+    \begin{itemize}
+        \item $-2^n\cdot -2^n$;
+        \item $-2^n\cdot x$, где $x>0$;
+        \item $(2^n-1)\cdot(2^n-1)$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+\end{frame}
+
+\section{Самообучение}
+
+\begin{frame}
+    \frametitle{Советы самоучке}
+    
+    Рекомендуется почитать разделы посвященные работе с битами в \cite{bib:warren:algTriks}.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Библиография}
+    \bibliographystyle{gost780u}
+    \bibliography{./../../../bibliobase}
+\end{frame}
+
+\end{document}

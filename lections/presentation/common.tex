@@ -1,0 +1,34 @@
+\usepackage{etex} %эта магическая херь избавляет от переполнения регистров TeX а!!!
+
+\mode<article>{\usepackage{fullpage}}
+\mode<presentation>{
+    \usetheme{Madrid} %%Boadilla,Madrid,AnnArbor,CambridgeUS,Malmoe,Singapore,Berlin
+    \useoutertheme{shadow}
+} 
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage[all]{xy}
+
+\date{Лекция по дисциплине <<информатика>>\\(\today)}
+\author[М.~М.~Шихов]{Михаил Шихов \\ \texttt{\underline{m.m.shihov@gmail.com}}}
+
+%для рисования графов пакетом xy-pic
+\entrymodifiers={++[o][F-]}
+
+%для псевдокода алгоритмов (algorithm,algorithmic)
+\renewcommand{\algorithmicrequire}{\textbf{Вход:}}
+\renewcommand{\algorithmicensure}{\textbf{Выход:}}
+\renewcommand{\algorithmiccomment}[1]{// #1}
+\floatname{algorithm}{Псевдокод}
+
+%\input{newcommand}

@@ -1,0 +1,641 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[Умножение в ПК]{Умножение с фиксированной точкой\\(прямой код)}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+\begin{frame}<presentation>
+    \frametitle{Содержание}
+    \tableofcontents
+\end{frame}
+
+\begin{frame}
+    \frametitle{Дробно-нормализованные числа}
+    \framesubtitle{Для обоснований выкладок мы используем дробное масштабирование}
+    
+    \[x=y\cdot M\]
+
+    Для обоснования выкладок будут использоваться $y$.
+
+    \begin{block}{}
+        $y$ --- дробное число, его целая часть $y$ равна нолю.
+    \end{block}
+    
+    Рарзядная сетка хранит разряды дробной части $y$.
+    \[
+        \raisebox{1.\height}{0.}
+        \raisebox{1.\height}{
+            \UnsignedAny{n-1}{yyyyy$\cdots$yyyyy}
+        }
+    \]
+    
+    Чтобы зафиксировать запятую между $k$ и $(k-1)$ разрядами $n$-разрядной сетки, выбирается масштаб
+    \[
+        M=2^{(n-k)}.
+    \]
+\end{frame}
+
+\section{Процесс умножения в 2СС}
+
+
+\subsection{Умножение <<столбиком>>}
+\begin{frame}
+    \frametitle{Умножение <<столбиком>>}
+    
+    Пусть для положительных чисел $A$ и $B$ имеются дробно-масштабированные представления в двоичной системе счисления. Пусть
+    \[
+        A\equiv(0,a_{1}\cdots a_{n})_2.
+    \]
+
+    Тогда результат произведения $A\times B$ в двоичной системе счисления будет определяться по формуле:
+    \[
+        A\times B = B\cdot\sum_{i=1}^{n} a_{i}\cdot 2^{-i} = \sum_{i=1}^{n} (B\cdot 2^{-i})\cdot a_i = \sum_{i=1}^{n} (B \gg i)\cdot a_i.
+    \]
+\end{frame}
+
+\subsection{Пример умножения}
+
+\begin{frame}
+    \frametitle{Пример умножения}
+    \framesubtitle{Операнды}
+    
+    Требуется найти произведение $A\times B$, где $A=23$ и $B=25$. Дробные представления (с масштабирующим множителем $M=2^5$) будут:
+    \begin{align*}
+        A\equiv\Number{0,10111},\\
+        B\equiv\Number{0,11001}.
+    \end{align*}
+    
+    \begin{block}{}
+        Результатоом произведения будет дробное число, но с масштабом 
+        \[
+            M^2 = 2^{10}
+        \]
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Пример умножения <<столбиком>> чисел без знака}
+    
+    \begin{align*}
+        A\equiv\Number{,10111},\\
+        B\equiv\Number{,11001}.
+    \end{align*}
+    
+    \[    
+        \begin{tabular}{c|c|c}
+                                                                     \hline\hline
+            $i$ & Разряды $a_i$    & $(B\cdot 2^{-i}) \cdot a_i$  \\ \hline\hline
+            -1  & \Number{1....} & \Number{~.1100 1....} \\
+            -2  & \Number{.0...} & \Number{~..... .....} \\
+            -3  & \Number{..1..} & \Number{~...11 001..} \\
+            -4  & \Number{...1.} & \Number{~....1 1001.} \\
+            -5  & \Number{....1} & \Number{~..... 11001} \\ \hline
+            \multicolumn{2}{r}{Результат:} 
+                                   & \Number{,10001 11111} \\
+        \end{tabular}
+    \]
+    
+    \[(\Number{,10001 11111})_2\cdot 2^{10}=(\Number{10001 11111,})_2=575=23\cdot 25.\]
+\end{frame}
+
+
+\section{Основные способы умножения}
+
+
+\subsection{I способ}
+
+\begin{frame}
+    \begin{center}
+        I-й способ
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{I-й способ}
+    
+    \begin{align*}
+        A\equiv\Number{,10111},\\
+        B\equiv\Number{,11001}.
+    \end{align*}
+    
+    \[    
+        \begin{tabular}{c|c|c}
+                                                                     \hline\hline
+            $i$ & Разряды $a_i$    & $(B\cdot 2^{-i}) \cdot a_i$  \\ \hline\hline
+            \uncover<5->{-1}  & \uncover<5->{\Number{1....}} & \only<5>{\Number{.1100 1....~~~~}}%
+                                                               \\
+            \uncover<4->{-2}  & \uncover<4->{\Number{.0...}} & \only<5>{\Number{..... .....~~~~}}%
+                                                               \only<4>{\Number{~..... .....~~~}}% 
+                                                               \\
+            \uncover<3->{-3}  & \uncover<3->{\Number{..1..}} & \only<5>{\Number{...11 001..~~~~}}%
+                                                               \only<4>{\Number{~..110 01...~~~}}% 
+                                                               \only<3>{\Number{~~.1100 1....~~}}% 
+                                                               \\
+            \uncover<2->{-4}  & \uncover<2->{\Number{...1.}} & \only<5>{\Number{....1 1001.~~~~}}%
+                                                               \only<4>{\Number{~...11 001..~~~}}% 
+                                                               \only<3>{\Number{~~..110 01...~~}}% 
+                                                               \only<2>{\Number{~~~.1100 1....~}}% 
+                                                               \\
+            \uncover<1->{-5}  & \uncover<1->{\Number{....1}} & \only<5>{\Number{..... 11001~~~~}}% 
+                                                               \only<4>{\Number{~....1 1001.~~~}}% 
+                                                               \only<3>{\Number{~~...11 001..~~}}% 
+                                                               \only<2>{\Number{~~~..110 01...~}}% 
+                                                               \only<1>{\Number{~~~~.1100 1....}}% 
+                                                               \\ \hline
+            \multicolumn{2}{r}{\uncover<5>{Результат:}} 
+                                   &    \only<5>{\Number{10001 11111~~~~}}%
+                                        \only<4>{\Number{~01010 11110~~~}}%
+                                        \only<3>{\Number{~~10101 11100~~}}%
+                                        \only<2>{\Number{~~~10010 11000~}}%
+                                        \only<1>{\Number{~~~~01100 10000}}%
+                                        \\
+        \end{tabular}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{I способ: аналитически}
+
+    \begin{gather*}
+        a_{n}B\cdot2^{-n}+a_{(n-1)}B\cdot2^{-(n-1)}+ \cdots 
+        +a_{2}B\cdot2^{-2}+a_{1}B\cdot2^{-1}
+        \\
+        \Leftrightarrow
+        \\
+        \left(\left(\cdots\left(\left(a_{n}\frac{B}{2}\right)\cdot 2^{-1} 
+            + a_{(n-1)}\frac{B}{2}\right)\cdot 2^{-1} 
+                + \cdots 
+                    + a_{2}\frac{B}{2}\right)\cdot 2^{-1}
+                        + a_{1}\frac{B}{2}\right)
+    \end{gather*}
+
+    В реккурентной форме:
+    \[
+        S_i=
+        \begin{cases}
+            \displaystyle a_{n}\frac{B}{2},                         &\text{если $i=n$},\\
+            \displaystyle S_{(i+1)}\cdot 2^{-1} + a_i\frac{B}{2},   &\text{если $i<n$}.\\
+        \end{cases}
+    \]
+    
+    $S_1$ --- результат ($S_n\to S_{n-1}\to\cdots\to S_2\to S_1$)
+\end{frame}
+
+\begin{frame}
+    \frametitle{I способ: реализация}
+    
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{fig/mult-methods.1}
+    \end{center}
+\end{frame}
+
+\subsection{II способ}
+
+\begin{frame}
+    \begin{center}
+        II-й способ
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{II-й способ}
+    
+    \begin{align*}
+        A\equiv\Number{,10111},\\
+        B\equiv\Number{,11001}.
+    \end{align*}
+    
+    \[    
+        \begin{tabular}{c|c|c}
+                                                                     \hline\hline
+            $i$ & Разряды $a_i$    & $(B\cdot 2^{-i}) \cdot a_i$  \\ \hline\hline
+            \uncover<5->{-1}  & \uncover<5->{\Number{1....}} & \uncover<5->{\Number{.1100 1....}} \\
+            \uncover<4->{-2}  & \uncover<4->{\Number{.0...}} & \uncover<4->{\Number{..... .....}} \\
+            \uncover<3->{-3}  & \uncover<3->{\Number{..1..}} & \uncover<3->{\Number{...11 001..}} \\
+            \uncover<2->{-4}  & \uncover<2->{\Number{...1.}} & \uncover<2->{\Number{....1 1001.}} \\
+            \uncover<1->{-5}  & \uncover<1->{\Number{....1}} & \uncover<1->{\Number{..... 11001}} \\ \hline
+            \multicolumn{2}{r}{\uncover<5>{Результат:}} 
+                                   &    \only<5>{\Number{10001 11111}}%
+                                        \only<4>{\Number{00101 01111}}%
+                                        \only<3>{\Number{00101 01111}}%
+                                        \only<2>{\Number{00010 01011}}%
+                                        \only<1>{\Number{00000 11001}}%
+                                        \\
+        \end{tabular}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{II способ: аналитически}
+
+    \begin{gather*}
+        a_{n}\cdot\frac{B}{2^{n}}
+            +a_{(n-1)}\cdot\frac{B}{2^{(n-1)}}
+                +a_{(n-2)}\cdot\frac{B}{2^{(n-2)}}
+                    + \cdots 
+                        +a_{1}\cdot\frac{B}{2^{-1}}
+        \\
+        \Leftrightarrow
+        \\
+        \left(\cdots\left(\left(\left(a_{n}\cdot\frac{B}{2^{n}}\right)
+            +a_{(n-1)}\cdot\frac{B}{2^{(n-1)}}\right)
+                +a_{(n-2)}\cdot\frac{B}{2^{(n-2)}}\right)
+                    + \cdots 
+                        +a_{1}\cdot\frac{B}{2^{-1}}\right)
+    \end{gather*}
+    
+    В реккурентной форме:
+    \[
+        S_i=
+        \begin{cases}
+            \displaystyle a_{n}\cdot\frac{B}{2^{n}},            &\text{если $i=n$},\\
+            \displaystyle S_{(i+1)} + a_i\cdot\frac{B}{2^{i}}, &\text{если $i<n$}.\\
+        \end{cases}
+    \]
+    $S_1$ --- результат ($S_n\to S_{n-1}\to\cdots\to S_2\to S_1$)
+\end{frame}
+
+\begin{frame}
+    \frametitle{II-способ: реализация}
+    
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{fig/mult-methods.2}
+    \end{center}
+\end{frame}
+
+
+\subsection{III способ}
+
+\begin{frame}
+    \begin{center}
+        III-й способ
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{III-й способ}
+    
+    \begin{align*}
+        A\equiv\Number{,10111},\\
+        B\equiv\Number{,11001}.
+    \end{align*}
+    
+    \[    
+        \begin{tabular}{c|c|c}
+                                                                     \hline\hline
+            $i$ & Разряды $a_i$    & $(B\cdot 2^{-i}) \cdot a_i$  \\ \hline\hline
+            \uncover<1->{-1}  & \uncover<1->{\Number{1....}} & \only<1>{\Number{..... 11001~~~~}}% 
+                                                               \only<2>{\Number{~....1 1001.~~~}}%
+                                                               \only<3>{\Number{~~...11 001..~~}}%
+                                                               \only<4>{\Number{~~~..110 01...~}}%
+                                                               \only<5>{\Number{~~~~.1100 1....}}%
+                                                               \\
+            \uncover<2->{-2}  & \uncover<2->{\Number{.0...}} & \only<2>{\Number{~..... .....~~~}}%
+                                                               \only<3>{\Number{~~..... .....~~}}%
+                                                               \only<4>{\Number{~~~..... .....~}}%
+                                                               \only<5>{\Number{~~~~..... .....}}%
+                                                               \\
+            \uncover<3->{-3}  & \uncover<3->{\Number{..1..}} & \only<3>{\Number{~~.....11 001~~}}% 
+                                                               \only<4>{\Number{~~~....11 001.~}}%
+                                                               \only<5>{\Number{~~~~...11 001..}}%
+                                                               \\
+            \uncover<4->{-4}  & \uncover<4->{\Number{...1.}} & \only<4>{\Number{~~~.....1 1001~}}%
+                                                               \only<5>{\Number{~~~~....1 1001.}}%
+                                                               \\
+            \uncover<5->{-5}  & \uncover<5->{\Number{....1}} & \only<5>{\Number{~~~~..... 11001}}%
+                                                               \\ \hline
+            \multicolumn{2}{r}{\uncover<5>{Результат:}} 
+                                   &    \only<1>{\Number{00000 11001~~~~}}%
+                                        \only<2>{\Number{~00001 10010~~~}}%
+                                        \only<3>{\Number{~~00011 11101~~}}%
+                                        \only<4>{\Number{~~~01000 10011~}}%
+                                        \only<5>{\Number{~~~~10001 11111}}%
+                                        \\
+        \end{tabular}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{III способ: аналитически}
+
+    \begin{gather*}
+        a_{1}B\cdot2^{-1}+a_{2}B\cdot2^{-2}+ \cdots 
+        +a_{(n-1)}B\cdot2^{-(n-1)}+a_{n}B\cdot2^{-n}
+        \\
+        \Leftrightarrow
+        \\
+        \left(\left(\cdots\left(\left(a_{1}\frac{B}{2^n}\right)\cdot 2
+            +a_{2}\frac{B}{2^n}\right)\cdot 2
+                + \cdots             
+                    +a_{(n-1)}\frac{B}{2^n}\right)\cdot 2
+                        +a_{n}\frac{B}{2^n}\right)
+    \end{gather*}
+    
+    В реккурентной форме:
+    \[
+        S_i=
+        \begin{cases}
+            \displaystyle a_{1}\frac{B}{2^n},                     &\text{если $i=1$},\\
+            \displaystyle S_{(i-1)}\cdot 2 + a_{i}\frac{B}{2^n},  &\text{если $i>1$}.\\
+        \end{cases}
+    \]
+    $S_n$ --- результат ($S_1\to S_2\to\cdots\to S_{n-1}\to S_n$)
+\end{frame}
+
+\begin{frame}
+    \frametitle{III-способ: реализация}
+    
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{fig/mult-methods.3}
+    \end{center}
+\end{frame}
+
+
+\subsection{IV способ}
+
+\begin{frame}
+    \begin{center}
+        IV способ
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{IV способ}
+    
+    \begin{align*}
+        A\equiv\Number{,10111},\\
+        B\equiv\Number{,11001}.
+    \end{align*}
+    
+    \[    
+        \begin{tabular}{c|c|c}
+                                                                     \hline\hline
+            $i$ & Разряды $a_i$    & $(B\cdot 2^{-i}) \cdot a_i$  \\ \hline\hline
+            \uncover<1->{-1}  & \uncover<1->{\Number{1....}} & \uncover<1->{\Number{.1100 1....}} \\
+            \uncover<2->{-2}  & \uncover<2->{\Number{.0...}} & \uncover<2->{\Number{..... .....}} \\
+            \uncover<3->{-3}  & \uncover<3->{\Number{..1..}} & \uncover<3->{\Number{...11 001..}} \\
+            \uncover<4->{-4}  & \uncover<4->{\Number{...1.}} & \uncover<4->{\Number{....1 1001.}} \\
+            \uncover<5->{-5}  & \uncover<5->{\Number{....1}} & \uncover<5->{\Number{..... 11001}} \\ \hline
+            \multicolumn{2}{r}{\uncover<5>{Результат:}} 
+                                   &    \only<1>{\Number{01100 10000}}%
+                                        \only<2>{\Number{01100 10000}}%
+                                        \only<3>{\Number{01111 10100}}%
+                                        \only<4>{\Number{10001 00110}}%
+                                        \only<5>{\Number{10001 11111}}%
+                                        \\
+        \end{tabular}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{IV способ: аналитически}
+
+    \begin{gather*}
+        a_{1}B\cdot2^{-1}+a_{2}B\cdot2^{-2}+a_{3}B\cdot2^{-3}+ \cdots 
+        +a_{(n)}B\cdot2^{-n}
+        \\
+        \Leftrightarrow
+        \\
+        (\cdots(((a_{1}B\cdot2^{-1})+a_{2}B\cdot2^{-2})+a_{3}B\cdot2^{-3})+ \cdots 
+        +a_{n}B\cdot2^{-n})
+    \end{gather*}
+
+    В реккурентной форме:
+    \[
+        S_i=
+        \begin{cases}
+            a_1B\cdot 2^{-1},&\text{если $i=1$},\\
+            S_{(i-1)} + a_iB\cdot 2^{-i},&\text{если $i>1$}.\\
+        \end{cases}
+    \]
+    $S_n$ --- результат ($S_1\to S_2\to\cdots\to S_{n-1}\to S_n$)
+\end{frame}
+
+\begin{frame}
+    \frametitle{IV-способ: реализация}
+    
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{fig/mult-methods.4}\\
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    Резюме:
+    \begin{center}
+        \begin{tabular}{c||c||c}
+                & Сдвиг СЧП
+                    & Сдвиг множимого\\
+            \hline\hline
+            \rotatebox{90}{\texttt{shr}(Мн-ль)}
+                & \includegraphics[width=.43\textwidth]{fig/mult-methods.1}
+                    & \includegraphics[width=.43\textwidth]{fig/mult-methods.2}\\
+            \hline\hline
+            \rotatebox{90}{\texttt{shl}(Мн-ль)}
+                & \includegraphics[width=.43\textwidth]{fig/mult-methods.3}
+                    & \includegraphics[width=.43\textwidth]{fig/mult-methods.4}\\
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+
+\section{Примеры умножения в прямом коде}
+
+\begin{frame}
+    \frametitle{Умножение в прямом коде}
+
+    При умножении в прямом коде знак результата и результат умножения модулей формируются независимо. 
+    
+    \begin{enumerate}
+        \item Знак результата
+        \begin{block}{}
+            получается сложением <<по модулю два>> (XOR) знаков множителя и множимого.
+        \end{block}
+        
+        \item Модуль (мантисса) результата получается беззнаковым перемножением мантисс операндов.
+        
+        \item Корректируется, если нужно, запрещенная комбинация <<минус ноль>>.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Операнды}
+
+    Перемножить числа в прямом коде
+    
+    Множитель: \[-25=(-11001)_2.\]
+    
+    Множимое: \[-23=(-10111)_2.\]
+    
+    Используем дробное масштабирование с множителем $2^5$.
+    
+    Знак получаем отдельно: $1\oplus 1=0$. Результат положителен.
+    
+    Далее показано только получение мантиссы результата разными способами. В таблицах отражаеются состояния основных регистров по тактам.
+\end{frame}
+
+
+\subsection{I способ}
+
+\begin{frame}
+    \frametitle{I-способ}
+
+    \begin{tabular}{c|r|l}
+                                                                   \hline\hline
+        мн-ль $\rightarrow$ & 
+                                \multicolumn{1}{|c|}{СЧП $\rightarrow$}       
+                                                        & прим. \\ \hline\hline
+        \NumberLo{,1100}{1} & \Addition{,00000 00000}
+                                       {,.1011 1....}
+                                       {,01011 10000} & +мн-е/2; сдвиг\\ \hline
+        \NumberLo{,.110}{0} &   \Number{,00101 11000} & сдвиг\\ \hline
+        \NumberLo{,..11}{0} &   \Number{,00010 11100} & сдвиг\\ \hline
+        \NumberLo{,...1}{1} & \Addition{,00001 01110}
+                                       {,.1011 1....}
+                                       {,01100 11110} & +мн-е/2; сдвиг\\ \hline
+        \NumberLo{,....}{1} & \Addition{,00110 01111}
+                                       {,.1011 1....}
+                                       {,10001 11111} & +мн-е/2; Рез-т!\\
+    \end{tabular}
+\end{frame}
+
+
+\subsection{II способ}
+
+\begin{frame}
+    \frametitle{II-способ}
+
+    \begin{tabular}{c|r|r|l}
+                                                                   \hline\hline
+        множитель $\rightarrow$ 
+                            & \multicolumn{1}{|c|}{мн-е $\leftarrow$}       
+                                                     & \multicolumn{1}{|c|}{СЧП}       
+                                                                                  & прим. \\ \hline\hline
+        \NumberLo{,1100}{1} & \Number{,..... 10111} & \Addition {,00000 00000} 
+                                                                {,..... 10111}
+                                                                {,00000 10111} & +мн-е; сдвиг\\ \hline
+        \NumberLo{,.110}{0} & \Number{,....1 0111.} &                           & сдвиг\\ \hline
+        \NumberLo{,..11}{0} & \Number{,...10 111..} &                           & сдвиг\\ \hline
+        \NumberLo{,...1}{1} & \Number{,..101 11...} & \Addition {,00000 10111} 
+                                                                {,..101 11...}
+                                                                {,00110 01111} & +мн-е; сдвиг\\ \hline
+        \NumberLo{,....}{1} & \Number{,.1011 1....} & \Addition {,00110 01111} 
+                                                                {,.1011 1....}
+                                                                {,10001 11111} & +мн-е; Рез-т!\\
+    \end{tabular}
+\end{frame}
+
+
+\subsection{III способ}
+
+\begin{frame}
+    \frametitle{III-способ}
+
+    \begin{tabular}{c|r|l}
+                                                                   \hline\hline
+        мн-ль $\leftarrow$ 
+                               & \multicolumn{1}{|c|}{СЧП $\leftarrow$}       
+                                                           & прим.\\ \hline\hline
+        \NumberMid{,}{1}{1001} & \Addition{,00000 00000}
+                                          {,..... 10111}
+                                          {,00000 10111} & +мн-е; сдвиг\\ \hline
+        \NumberMid{,}{1}{001.} & \Addition{,00001 0111.}
+                                          {,..... 10111}
+                                          {,00010 00101} & +мн-е; сдвиг\\ \hline
+        \NumberMid{,}{0}{01..} &   \Number{,00100 0101.} & сдвиг\\ \hline
+        \NumberMid{,}{0}{1...} &   \Number{,01000 101..} & сдвиг\\ \hline
+        \NumberMid{,}{1}{....} & \Addition{,10001 01...}
+                                          {,..... 10111}
+                                          {,10001 11111} & +мн-е; Рез-т!\\ 
+    \end{tabular}
+\end{frame}
+
+
+\subsection{IV способ}
+
+\begin{frame}
+    \frametitle{IV-способ}
+
+    \begin{tabular}{c|r|r|l}
+                                                                   \hline\hline
+        мн-ль $\leftarrow$ 
+                               & \multicolumn{1}{|c|}{мн-е $\rightarrow$}       
+                                                       & \multicolumn{1}{|c|}{СЧП}       
+                                                                                 & прим. \\ \hline\hline
+        \NumberMid{,}{1}{1001} & \Number{,.1011 1....} & \Addition{,00000 00000} 
+                                                                  {,.1011 1....}
+                                                                  {,01011 10000} & +мн-е; сдвиг;\\ \hline
+        \NumberMid{,}{1}{001.} & \Number{,..101 11...} & \Addition{,01011 10000} 
+                                                                  {,..101 11...}
+                                                                  {,10001 01000} & +мн-е; сдвиг\\ \hline
+        \NumberMid{,}{0}{01..} & \Number{,...10 111..} &                         & сдвиг\\ \hline
+        \NumberMid{,}{0}{1...} & \Number{,....1 0111.} &                         & сдвиг\\ \hline
+        \NumberMid{,}{1}{....} & \Number{,..... 10111} & \Addition{,10001 01000} 
+                                                                  {,..... 10111}
+                                                                  {,10001 11111} & +мн-е; Рез-т!\\
+    \end{tabular}
+\end{frame}
+
+\appendix
+
+
+\section{Задания на практику}
+
+
+\subsection{Проходное}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    Какова минимальная разрядность результата перемножения $n$-разрядных прямых кодов?
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    Перемножить числа $-91$ и $114$. Самостоятельно выбрать масштаб.
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    Выявить ситуации получения неправильных прямых кодов.
+\end{frame}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    Обосновать, работает ли схема умножения модулей первым способом:
+    \begin{center}
+        \includegraphics{fig/mult-methods.5}
+    \end{center}
+    
+    \begin{itemize}
+        \item Как её модифицировать, если она работает неправильно?
+        \item Где получается результат?
+    \end{itemize}
+\end{frame}
+
+\section{Самообучение}
+
+\begin{frame}
+    \frametitle{Советы самоучке}
+    
+    Классика жанра: \cite{bib:lisikov:automateBase,bib:saveliev:automateTheory}.
+
+    Рекомендуется почитать разделы, посвященные работе с суммами и рекуррентными соотношениями в книге \cite{bib:knuth:concretemath}.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Библиография}
+    \bibliographystyle{gost780u}
+    \bibliography{./../../../bibliobase}
+\end{frame}
+
+\end{document}

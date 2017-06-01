@@ -1,0 +1,125 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[Элементы схем цифровой техники]{Элементы электрических схем цифровой техники\\(теория к лабораторным работам)}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+
+\begin{frame}
+    \frametitle{Шины, жгуты}
+    \begin{center}
+        \includegraphics[width=.9\textwidth]{fig/bus}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Входы, выходы и управляющие сигналы}
+    \begin{center}
+        \includegraphics[height=.8\textheight]{fig/controls}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Логическая схема}
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{fig/logic}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{$4$-х разрядный инвертор}
+    \begin{center}
+        \includegraphics{fig/invertor}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Многовходовые логические элементы}
+    \begin{center}
+        \includegraphics{fig/bigAnd}
+    \end{center}
+\end{frame}
+    
+\begin{frame}
+    \frametitle{Мультиплексор}
+    \begin{center}
+        \includegraphics{fig/mux}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Многоплечевой мультиплексор}
+    \begin{center}
+        \includegraphics{fig/muxbig}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Сумматор}
+    \begin{center}
+        \includegraphics{fig/summator}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{8-разрядный сумматор на основе двух 4-х разрядных}
+    \begin{center}
+        \includegraphics[width=.95\textwidth]{fig/summators}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{15-разрядный шинный формирователь}
+    \begin{center}
+        \includegraphics{fig/zbuffer}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{8-разрядный регистр}
+    \begin{center}
+        \includegraphics{fig/register}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{7-разрядный сдвиговый регистр}
+    \begin{center}
+        \includegraphics{fig/shiftregister}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{D-триггер}
+    \begin{center}
+        \includegraphics{fig/dtrigger}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Модель вычислительной системы}
+    \begin{center}
+        \includegraphics[height=.85\textheight]{fig/model}
+    \end{center}
+\end{frame}
+    
+\begin{frame}
+    \frametitle{Пример схемы умножения первым способом в ПК}
+    \begin{center}
+        \includegraphics[height=.85\textheight]{fig/mulPCI}
+    \end{center}
+\end{frame}
+
+\end{document}

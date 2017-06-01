@@ -1,0 +1,685 @@
+%include part: see main.beamer.tex and main.article.tex
+%include common packages and settings
+\input{./../common}
+\input{./../newcommand}
+
+\title[2-10 коды]{Двоично-десятичные коды}
+
+\newcounter{TaskSimpleCtr}
+\setcounter{TaskSimpleCtr}{1}
+\newcommand{\TaskSimpleNumber}{ \arabic{TaskSimpleCtr}) \addtocounter{TaskSimpleCtr}{1} }
+
+%вставка изображений из metapost (post script)
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\newcommand{\NaturalLabel}{\text{``\texttt{8421}''}}
+\newcommand{\Natural}[1]{\NaturalLabel(#1)}
+
+\newcommand{\PlusThreeLabel}{\text{``\texttt{8421+3}''}}
+\newcommand{\PlusThree}[1]{\PlusThreeLabel(#1)}
+
+\newcommand{\AikenLabel}{\text{``\texttt{2421}''}}
+\newcommand{\Aiken}[1]{\AikenLabel(#1)}
+
+\newcommand{\PentaLabel}{\text{``\texttt{3a+2}''}}
+\newcommand{\Penta}[1]{\PentaLabel(#1)}
+
+
+\begin{document}
+
+\mode<article>{\maketitle\tableofcontents}
+\frame<presentation>{\titlepage}
+\begin{frame}<presentation>
+    \frametitle{Содержание}
+    \tableofcontents
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Введение}
+
+    \begin{block}{}
+        Двоично-десятичные коды могут быть использваны для выполнения высокоточных вычислений в десятичной системе счисления с помощью двоичной вычислительной техники.
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Обратный код в десятичной системе счисления}
+
+    \[
+        \OC{X} = 
+        \begin{cases}
+            \overline{|X|}, &\text{ если $X<0$,}\\
+            |X|,            &\text{ если $X\ge 0$,}
+        \end{cases}
+    \]
+    где $\overline{|X|}$ --- порязрядное дополнение цифр десятичного числа $X$ до $9$, то есть разряд $x_i$ числа находится как $(9-x_i)$.    
+
+    \[
+        X = 
+        \begin{cases}
+            -(\overline{\OC{X}}), &\text{ если $msb(\OC{X})=9$,}\\
+             \OC{X},              &\text{ если $msb(\OC{X})=0$,}
+        \end{cases}
+    \]
+    где $msb(x)$ --- функция, возвращающая старший значащий бит последовательности $x$.    
+    
+    \begin{block}{}
+        При сложении, как в двоичной системе счисления, единицу переноса из старшего разрядя следует прибавить к младшему разряду.
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Примеры сложения в обратном коде в 10СС}
+    \framesubtitle{4-х разрядная сетка}
+    
+    \begin{columns}
+        \column{.30\textwidth}
+            \begin{block}{$731-485=246$}
+                 \center
+                 \Addition{0731}
+                          {9514}
+                         {10245}
+                         
+                 Поправка:                         
+                 
+                 \Addition{0245}
+                          {0001}
+                          {0246}
+            \end{block}
+        \column{.30\textwidth}
+            \begin{block}{$204-690=-486$}
+                 \center
+                 \Addition{0204}
+                          {9309}
+                          {9513}
+            \end{block}
+        \column{.30\textwidth}
+            \begin{block}{$-247-585=-832$}
+                 \center
+                 \Addition{9752}
+                          {9414}
+                         {19166}
+                         
+                 Поправка:                         
+                 
+                 \Addition{9166}
+                          {0001}
+                          {9167}
+            \end{block}
+    \end{columns}
+
+    Признаками ПРС являются значения в знаковом разряде, отличные от 0 или 9: 1 --- положительное переполнение, 8 --- отрицательное.
+\end{frame}
+
+
+\section{Четырехбитные коды}
+
+
+\begin{frame}
+    \frametitle{Инверсия разрядов тетрады}
+
+    Арифметически, инверсия разрядов двоичной тетрады соответствует дополнению до 15:
+    \[
+        \overline{(\Number{xxxx})}_2 \Leftrightarrow (\Number{1111})_2-(\Number{xxxx})_2.
+    \]
+    Например $(\Number{1001})_2=9$:
+    \[
+        \overline{(\Number{1001})}_2=(\Number{0110})_2=6=(15-9).
+    \]
+\end{frame}
+
+
+\subsection{Код \NaturalLabel}
+
+
+\begin{frame}
+    \frametitle{Код \NaturalLabel}
+    \framesubtitle{Код с естественными весами: $\Natural{a}=a$}
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline\hline
+        $a$ в 10СС  & $\Natural{a}$         & $\Natural{9-a}$\\
+        \hline\hline
+        $0$         & $\Number{0000}$       & $\Number{1001}$ \\
+        $1$         & $\Number{0001}$       & $\Number{1000}$ \\
+        $2$         & $\Number{0010}$       & $\Number{0111}$ \\
+        $3$         & $\Number{0011}$       & $\Number{0110}$ \\
+        $4$         & $\Number{0100}$       & $\Number{0101}$ \\
+        $5$         & $\Number{0101}$       & $\Number{0100}$ \\
+        $6$         & $\Number{0110}$       & $\Number{0011}$ \\
+        $7$         & $\Number{0111}$       & $\Number{0010}$ \\
+        $8$         & $\Number{1000}$       & $\Number{0001}$ \\
+        $9$         & $\Number{1001}$       & $\Number{0000}$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    $\Natural{9-a}=9-a=(15-a)-6=\overline{\Natural{a}}-6=\overline{\Natural{a}}+\Number{1010}.$
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \NaturalLabel}
+    \framesubtitle{Сложение $S=A+B$, где $A=(a_{n-1}\cdots a_0)$ и $B=(b_{n-1}\cdots b_0)$}
+
+    \[
+        s_k=a_k+b_k+c_k,
+    \]
+    где $c_k$ --- перенос в $k$-й разряд, а $s_k,a_k,b_k$ --- десятичные цифры.
+    
+    \begin{enumerate}
+        \item $(a_k+b_k+c_k)<10$; $c_{k+1}=0$. Код $(a_k+b_k+c_k)$ корректен.
+        
+        \item $10\leq (a_k+b_k+c_k)\leq 15$; $c_{k+1}=0$. Неверно! Перенос в 10СС должен быть, но в 16СС его не случилось. Правильная 10СС цифра $(a_k+b_k+c_k-10)$, и перенос: $(a_k+b_k+c_k-10)+16=(a_k+b_k+c_k+6)$. Поправка: $+6=\Number{0110}$.
+        
+        \item $(a_k+b_k+c_k)\geq 16$; $c_{k+1}=1$. Неверно! Перенос корректен, а полученная цифра $(a_k+b_k+c_k-16)$ неправильна. Правильный код $(a_k+b_k+c_k-10)$. Поправка: $+6=\Number{0110}$. При такой поправке переноса не будет.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \NaturalLabel}
+    \framesubtitle{Упрощение условий поправок}
+
+    \[
+        s_k=a_k+b_k+c_k,
+    \]
+    
+    Из предыдущего слайда ясно, что:
+    \begin{enumerate}
+        \item\label{bcd:fixup} Если $0\leq(a_k+b_k+c_k)\leq 9$, то поправок не надо.
+        \item Если $10\leq(a_k+b_k+c_k)\leq 19$, то нужна поправка $(+6)=\Number{0110}$. Переносы из тетрады в тетраду при этом возникают автоматически.
+    \end{enumerate}
+    
+    Поэтому поправку $(+6)=\Number{0110}$ можно прибавить к обратному коду одного из операндов заранее. И тогда, если переноса из тетрады не будет (только в случае условия из п. \ref{bcd:fixup}) поправку нужно вычесть из тетрады.
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Алгоритм сложения в коде \NaturalLabel}
+
+    \begin{enumerate}
+        \item Перевести слагаемые в обратный $\NaturalLabel$-код. Каждая тетрада модуля отрицательного слагаемого инвертируются и к результату прибавляется код $(-6)=\Number{1010}$. Переносы между тетрадами не распространяются.
+        \item К каждой тетраде одного из слагаемых прибавляется поправка $(+6)=\Number{0110}$. Переносов между тетрадами при этом не возникает\footnote{Если одно из слагаемых отрицательно, то поправки перевода в ОК (-6) и поправка данного шага (+6) друг друга компенсируют!}.
+        \item Выполняется сложение по правилам двоичной арифметики. Переносы распространяются.
+        \item Корректируются тетрады, из которых не было переносов. К каждой такой тетраде прибавляется $-6$, т.е. тетрада $\Number{1010}$. Переносы не распространяются.
+        \item Результат получен в обратном \NaturalLabel-коде.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Код \NaturalLabel}
+    \framesubtitle{Пример сложения $-57$ и $894$. }
+
+    \begin{enumerate}
+        \item Перевод в ОК (добавлены два знаковых двоичных разряда МОК):
+        \begin{align*}
+            -57\Rightarrow-\Number{0000 0101 0111}\Rightarrow\\
+            \Rightarrow\Addition{1111 1010 1000}
+                                {1010 1010 1010}
+                                {1001 0100 0010}\\
+            \OC{-57}=\Number{11 1001 0100 0010}\\
+            \OC{894}=\Number{00 1000 1001 0100}
+        \end{align*}
+        
+        \item К каждой тетраде $\OC{-57}$ прибавлена тетрда $\Number{0110}$.
+        \[
+            \Addition{11 1001 0100 0010}
+                     {.. 0110 0110 0110}
+                     {11 1111 1010 1000}
+        \]
+
+        \item Выполняется сложение полученного числа с $\OC{894}$. 
+        \[
+            \Addition{11 1111 1010 1000}
+                     {00 1000 1001 0100}
+                   {1*00*1000*0011 1100}
+        \]
+        Коррекция переносом из знакового разряда:
+        \[
+            \Addition{00*1000*0011 1100}
+                     {.. .... .... ...1}
+                     {00*1000*0011 1101}
+        \]
+
+        \item Корректируются тетрады из которых не было переносов. Переносы между тетрадами не распространяются.
+        \[
+            \Addition{00*1000*0011 1101}
+                     {.. .... .... 1010}
+                     {00 1000 0011 0111}
+        \]
+    \end{enumerate}
+    
+    ПРС не возникло, $\OC{S}=\Number{00 1000 0011 0111}$, $S=837$
+\end{frame}
+
+
+\subsection{Код \PlusThreeLabel}
+
+
+\begin{frame}
+    \frametitle{Код \PlusThreeLabel}
+    \framesubtitle{Код с избытком 3: $\PlusThree{a}=(a+3)$}
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline\hline
+        $a$ в 10СС  & $\PlusThree{a}$  & $\PlusThree{9-a}$\\
+        \hline\hline
+        $0$         & $\Number{0011}$  & $\Number{1100}$ \\
+        $1$         & $\Number{0100}$  & $\Number{1011}$ \\
+        $2$         & $\Number{0101}$  & $\Number{1010}$ \\
+        $3$         & $\Number{0110}$  & $\Number{1001}$ \\
+        $4$         & $\Number{0111}$  & $\Number{1000}$ \\
+        $5$         & $\Number{1000}$  & $\Number{0111}$ \\
+        $6$         & $\Number{1001}$  & $\Number{0110}$ \\
+        $7$         & $\Number{1010}$  & $\Number{0101}$ \\
+        $8$         & $\Number{1011}$  & $\Number{0100}$ \\
+        $9$         & $\Number{1100}$  & $\Number{0011}$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    
+    $\overline{\PlusThree{a}}=15-(a+3)=12-a=(9-a)+3=\PlusThree{9-a}.$
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \PlusThreeLabel}
+    \framesubtitle{Сложение $S=A+B$, где $A=(a_{n-1}\cdots a_0)$ и $B=(b_{n-1}\cdots b_0)$}
+
+    \[
+        s_k=a_k+b_k+c_k.
+    \]
+    
+    \begin{enumerate}
+        \item $s_k<10$; При сложении кодов: \[(a_k+3)+(b_k+3)+c_k=(a_k+b_k+c_k)+6=(s_k+6).\] 
+
+        Так как $(s_k+6)\leq 15$, то переноса не возникает. Правильная тетрада должна быть $(s_k+3)$, следовательно, нужна поправка $-3=\Number{1101}$. Перенос игнорируется.
+        
+        \item $s_k\geq 10$; При сложении кодов возникнет перенос:
+        \[(a_k+3)+(b_k+3)+c_k-16=(a_k+b_k+c_k)-10=s_k-10.\] 
+
+        Для получения правильного: $(s_k-10)+3$, нужна поправка $+3=\Number{0011}$. Перенос игнорируется.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \PlusThreeLabel}
+    \framesubtitle{Алгоритм сложения}
+    
+    \begin{enumerate}
+        \item Перевести слагаемые в обратном $\PlusThreeLabel$-коде. Каждая тетрада модуля отрицательного числа инвертируется.
+        \item Выполняется сложение полученных операднов по правилам двоичной арифметики.
+        \item К тетрадам, из которых не было переноса, прибавляется $\Number{1101}$, а к остальным прибавляется $\Number{0011}$. Переносы игноритуются.
+        \item Результат получен в обратном \PlusThreeLabel-коде.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Код \PlusThreeLabel}
+    \framesubtitle{Пример сложения $-894$ и $57$. }
+
+    \begin{enumerate}
+        \item Перевод в ОК (добавлены два знаковых двоичных разряда МОК):
+        \begin{align*}
+            -894\Rightarrow-\Number{1011 1100 0111}\\
+            \OC{-894}=\Number{11 0100 0011 1000}\\
+            \OC{57}  =\Number{00 0011 1000 1010}\\
+        \end{align*}
+        
+        \item Выполняется сложение обратных кодов. 
+        \[
+            \Addition{11 0100 0011 1000}
+                     {00 0011 1000 1010}
+                     {11 0111 1100*0010}
+        \]
+
+        \item Выполняется коррекция. Переносы между тетрадами не распространяются.
+        \[
+            \Addition{11 0111 1100*0010}
+                     {.. 1101 1101 0011}
+                     {11 0100 1001 0101}
+        \]
+    \end{enumerate}
+    
+    ПРС не возникло, \[\OC{S}=\Number{11 0100 1001 0101}, \overline{\OC{S}}=\Number{00 1011 0110 1010},\] $S=-837$.
+\end{frame}
+
+
+\subsection{Код \AikenLabel}
+
+
+\begin{frame}
+    \frametitle{Код \AikenLabel}
+    \framesubtitle{Код Айкена: $\Aiken{a}\equiv t_{3}t_{2}t_{1}t_{0}$, $a=2t_{3}+4t_{2}+2t_{1}+1t_{0}$}
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline\hline
+        $a$ в 10СС  & $\Aiken{a}$                                   & $\Aiken{9-a}$\\
+        \hline\hline
+        $0$         & $\Number{0000}$                               & $\Number{1111}$ \\
+        $1$         & $\Number{0001}$                               & $\Number{1110}$ \\
+        %                  
+        $2$         & $\Number{0010}\leftrightarrow\Number{1000}$   & $\Number{1101}\leftrightarrow\Number{0111}$ \\
+        $3$         & $\Number{0011}\leftrightarrow\Number{1001}$   & $\Number{1100}\leftrightarrow\Number{0110}$ \\
+        $4$         & $\Number{0100}\leftrightarrow\Number{1010}$   & $\Number{1011}\leftrightarrow\Number{0101}$ \\
+        $5$         & $\Number{0101}\leftrightarrow\Number{1011}$   & $\Number{1010}\leftrightarrow\Number{0100}$ \\
+        $6$         & $\Number{0110}\leftrightarrow\Number{1100}$   & $\Number{1001}\leftrightarrow\Number{0011}$ \\
+        $7$         & $\Number{0111}\leftrightarrow\Number{1101}$   & $\Number{1000}\leftrightarrow\Number{0010}$ \\
+        %                  
+        $8$         & $\Number{1110}$                               & $\Number{0001}$ \\
+        $9$         & $\Number{1111}$                               & $\Number{0000}$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    
+    \begin{align*}
+        &\overline{T}=\overline{t_{3}t_{2}t_{1}t_{0}}=(2-2t_3) + (4-4t_3) + (2-2t_2) + (1-1t_0)=9-T,\\
+        &\overline{\Aiken{a}} = \Aiken{9-a}.
+    \end{align*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \AikenLabel}
+    \framesubtitle{Код Айкена: $\Aiken{a}\equiv t_{3}t_{2}t_{1}t_{0}$, $a=2t_{3}+4t_{2}+2t_{1}+1t_{0}$}
+    
+    Обобщая таблицу с предыдущего слайда:
+    \begin{enumerate}
+        \item если $0\leq a \leq 1$, то $\Aiken{a}=a$;
+        \item если $2\leq a \leq 7$, то $\Aiken{a}=a$ или $\Aiken{a}=(a+6)$;
+        \item если $8\leq a \leq 9$, то $\Aiken{a}=(a+6)$.
+    \end{enumerate}
+    
+    Преследуя цель <<пусть будет>>: <<однозначность>>, <<перенос>> и <<самодополняемость>>, формулируются новые правила:
+    \begin{enumerate}
+        \item\label{bcd:aiken:ruleI} если $0\leq a \leq 4$, то $\Aiken{a}=a$:
+        \[\overline{\Aiken{a}}=(15-a)=\underbrace{(9-a)+6}_{\text{см. п.\ref{bcd:aiken:ruleII}}}=\Aiken{9-a};\]
+        
+        \item\label{bcd:aiken:ruleII} если $5\leq a \leq 9$, то $\Aiken{a}=(a+6)$:
+        \[\overline{\Aiken{a}}=15-(a+6)=\underbrace{(9-a)}_{\text{см. п.\ref{bcd:aiken:ruleI}}}=\Aiken{9-a}.\]
+    \end{enumerate}
+    
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \AikenLabel}
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline\hline
+        $a$ в 10СС  & $\Aiken{a}$       & $\Aiken{9-a}$\\
+        \hline\hline                   
+        $0$         & $\Number{0000}$   & $\Number{1111}$ \\
+        $1$         & $\Number{0001}$   & $\Number{1110}$ \\
+        $2$         & $\Number{0010}$   & $\Number{1101}$ \\
+        $3$         & $\Number{0011}$   & $\Number{1100}$ \\
+        $4$         & $\Number{0100}$   & $\Number{1011}$ \\
+        $5$         & $\Number{1011}$   & $\Number{0100}$ \\
+        $6$         & $\Number{1100}$   & $\Number{0011}$ \\
+        $7$         & $\Number{1101}$   & $\Number{0010}$ \\
+        $8$         & $\Number{1110}$   & $\Number{0001}$ \\
+        $9$         & $\Number{1111}$   & $\Number{0000}$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    
+    \[
+        \overline{\Aiken{a}} = \Aiken{9-a}.
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \AikenLabel}
+
+    \[
+        s_k=a_k+b_k+c_k.
+    \]
+    
+    \begin{enumerate}
+        \item Если $0\leq a_{k},b_{k}\leq 4$, то сложение кодов $(a_{k}+b_{k}+c_{k})$:
+        \begin{enumerate}
+            \item если $0\leq (a_{k}+b_{k}+c_{k}) \leq 4$, то поправок не нужно;
+            \item если $5\leq(a_{k}+b_{k}+c_{k}) \leq 9$, то неверно! Должно быть: $(a_{k}+b_{k}+c_{k})+6$. Поправка: $+6=\Number{0110}$.
+        \end{enumerate}
+
+        \item\label{bcd:aiken:diff} Если $0\leq a_{k}\leq 4$ и $5\leq b_{k}\leq 9$, то код $(a_{k}+b_{k}+c_{k}+6)$:
+        \begin{enumerate}
+            \item если $5\leq (a_{k}+b_{k}+c_{k}) \leq 9$, то код верен;
+            \item если $10\leq(a_{k}+b_{k}+c_{k}) \leq 14$, то формируется перенос и $(a_{k}+b_{k}+c_{k}+6)-16$. Код $(a_{k}+b_{k}+c_{k}-10)$ верен.
+        \end{enumerate}
+        
+        \item Если $5\leq a_{k}\leq 9$ и $0\leq b_{k}\leq 4$ код верен (аналогично п.\ref{bcd:aiken:diff}).
+
+        \item Если $5\leq a_{k},b_{k}\leq 9$, то код $(a_{k}+b_{k}+c_{k}-10)+6$:
+        \begin{enumerate}
+            \item если $0\leq (a_{k}+b_{k}+c_{k}-10) \leq 4$, то неверно! Должно быть: $(a_{k}+b_{k}+c_{k} - 10)$. Поправка: $-6=\Number{1010}$.
+            \item если $5\leq(a_{k}+b_{k}+c_{k}-10) \leq 9$, то код верен!
+        \end{enumerate}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \AikenLabel}
+    \framesubtitle{Когда нужны поправки?}
+
+    \[
+        s_k=a_k+b_k+c_k.
+    \]
+    Запрещенные комбинации кода:
+    \[
+        \AikenLabel\notin\{\Number{0101},\Number{0110},\Number{0111},\Number{1000},\Number{1001},\Number{1010}\}.
+    \]
+    Правила коррекции:
+    \begin{enumerate}
+        \item Если $0\leq a_{k},b_{k}\leq 4$ и $5\leq(a_{k}+b_{k}+c_{k})\leq 9$, то поправка: $+6=\Number{0110}$. 
+        При этом $msb(\Aiken{a_k})=msb(\Aiken{b_k})=0$ и в результате получается одна из запрещенных комбинаций.
+        
+        \item Если $5\leq a_{k},b_{k}\leq 9$ и $0\leq(a_{k}+b_{k}+c_{k}-10)\leq 4$, то поправка: $-6=\Number{1010}$.
+        При этом $msb(\Aiken{a_k})=msb(\Aiken{b_k})=1$ и в результате получается одна из запрещенных комбинаций.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \AikenLabel}
+    \framesubtitle{Алгоритм сложения}
+    
+    \begin{enumerate}
+        \item Перевести слагаемые в обратный $\AikenLabel$-код. Каждая тетрада модуля отрицательного числа инвертируется.
+        \item Выполняется сложение полученных операднов по правилам двоичной арифметики.
+        \item В соответствии с изложенными выше правилами, выполняется коррекция результата. Переносы при коррекциях не распространяются.
+        \item Результат получен в обратном $\AikenLabel$-коде.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Код $\AikenLabel$}
+    \framesubtitle{Пример сложения $-365$ и $783$.}
+
+    \begin{enumerate}
+        \item Перевод в ОК (добавлены два знаковых двоичных разряда МОК):
+        \begin{align*}
+            -365\Rightarrow-\Number{0011 1100 1011}\\
+            \OC{-365} =\Number{11 1100 0011 0100}\\
+            \OC{783}  =\Number{00 1101 1110 0011}\\
+        \end{align*}
+        
+        \item Выполняется сложение обратных кодов. 
+        \[
+            \Addition{11 1100 0011 0100}
+                     {00 1101 1110 0011}
+                   {1*00 1010 0001 0111}
+        \]
+        Коррекция переносом:
+        \[
+            \Addition{00 1010 0001 0111}
+                     {.. .... .... ...1}
+                     {00 1010 0001 1000}
+        \]
+        
+        \item Выполняется коррекция. Переносы между тетрадами не распространяются.
+        \begin{align*}
+            \OC{-365} =\Number{11 1100 0011 0100}\\
+            \OC{783}  =\Number{00 1101 1110 0011}\\
+                     \Addition{00 1010 0001 1000}
+                              {.. 1010 .... 0110}
+                              {00 0100 0001 1110}
+        \end{align*}
+    \end{enumerate}
+    
+    ПРС не возникло, \[\OC{S}=\Number{00 0100 0001 1110},\] $S=418$.
+\end{frame}
+
+
+\section{Пятибитные коды}
+
+
+\subsection{Код $\PentaLabel$}
+
+
+\begin{frame}
+    \frametitle{Код \PentaLabel}
+    \framesubtitle{Пентадный код: $\Penta{a}=(3\cdot a + 2)$}
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline\hline
+        $a$ в 10СС  & $\Penta{a}$       & $\Penta{9-a}$\\
+        \hline\hline
+        $0$         & $\Number{00010}$  & $\Number{11101}$ \\
+        $1$         & $\Number{00101}$  & $\Number{11010}$ \\
+        $2$         & $\Number{01000}$  & $\Number{10111}$ \\
+        $3$         & $\Number{01011}$  & $\Number{10100}$ \\
+        $4$         & $\Number{01110}$  & $\Number{10001}$ \\
+        $5$         & $\Number{10001}$  & $\Number{01110}$ \\
+        $6$         & $\Number{10100}$  & $\Number{01011}$ \\
+        $7$         & $\Number{10111}$  & $\Number{01000}$ \\
+        $8$         & $\Number{11010}$  & $\Number{00101}$ \\
+        $9$         & $\Number{11101}$  & $\Number{00010}$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    
+    \[
+        \overline{\Penta{a}}=31-(3a+2)=3(9-a)+2=\Penta{9-a}
+    \]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \PentaLabel}
+    \framesubtitle{Сложение $S=A+B$, где $A=(a_{n-1}\cdots a_0)$ и $B=(b_{n-1}\cdots b_0)$}
+
+    \[
+        s_k=a_k+b_k+c_k.
+    \]
+    
+    \begin{enumerate}
+        \item Если $0\leq a_{k}+b_{k}+c_{k}\leq 9$:
+        \begin{enumerate}
+            \item если $c_{k}=0$, то код $3(a_{k}+b_{k}) + 4$. Верный код: $3(a_{k}+b_{k})+2$. Поправка: $-2=\Number{11110}$:
+            \item если $c_{k}=1$, то код $(3a_k+2)+(3b_{k}+2)+1=3(a_{k}+b_{k}+1)+2$. Код верен!
+        \end{enumerate}
+
+        \item Если $a_{k}+b_{k}+c_{k}\geq 10$:
+        \begin{enumerate}
+            \item если $c_{k}=0$, то код $(3a_{k}+2)+(3b_{k}+2)-32=3(a_{k}+ b_{k}-10)+2$. Код верен!
+            \item если $c_{k}=1$, то код $(3a_{k}+2)+(3b_{k}+2)+1-32$, т.е. $3((a_{k}+b_{k}+1)-10)$. Верный код:
+            $3((a_{k}+b_{k}+1)-10)+2$. Поправка: $+2=\Number{00010}$.
+        \end{enumerate}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Код \PentaLabel}
+    \framesubtitle{Алгоритм сложения}
+    
+    \begin{enumerate}
+        \item Перевести слагаемые в обратный $\PentaLabel$-код. Каждая тетрада модуля отрицательного числа инвертируется.
+        \item Выполняется сложение полученных операднов по правилам двоичной арифметики.
+        \item Выполняется коррекция. Прибавляется код $11110_{2}$ к пентадам, в которые и из которых не формировались единицы переноса. Прибавляется код $00010_{2}$ к пентадам, в которые и из которых формировались единицы переноса. В процессе коррекции переносы из пентады в пентаду не распространяются.
+        \item Результат получен в обратном $\PentaLabel$-коде.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Код \PentaLabel}
+    \framesubtitle{Пример сложения $-6425$ и $4985$}
+
+    \begin{enumerate}
+        \item Перевод в ОК (добавлены два знаковых двоичных разряда МОК):
+        \begin{align*}
+            -6425\Rightarrow-\Number{10100 01110 01000 10001}\\
+            \OC{-6425}   =\Number{11 01011 10001 10111 01110}\\
+            \OC{4985}    =\Number{00 01110 11101 11010 10001}
+        \end{align*}
+        
+        \item Выполняется сложение обратных кодов. 
+        \[
+            \Addition{11 01011 10001 10111 01110}
+                     {00 01110 11101 11010 10001}
+                     {11 11010*01111*10001 11111}
+        \]
+        
+        \item Выполняется коррекция. Переносы между тетрадами не распространяются.
+        \[
+            \Addition{11 11010*01111*10001 11111}
+                     {.. ..... 00010 ..... 11110}
+                     {11 11010 10001 10001 11101}
+        \]
+    \end{enumerate}
+    
+    ПРС не возникло, 
+    \begin{align*}
+        \OC{S}=\Number{11 11010 10001 10001 11101},\\
+        \overline{\OC{S}}=\Number{00 00101 01110 01110 00010},\\
+        S=-1440.
+    \end{align*} 
+\end{frame}
+
+
+\appendix
+
+
+\section{Задания на практику}
+
+
+\subsection{Проходное}
+
+\begin{frame}
+    \frametitle{\TaskSimpleNumber}
+    
+    Всеми рассмотренными способами решить <<универсальные>> примеры:
+    \begin{enumerate}
+        \item \(
+            \Addition{+27837}
+                     {-14657}
+                     {+13180}
+        \)
+
+        \item \(
+            \Addition{-53043}
+                     {-31776}
+                     {-84819}
+        \)
+    \end{enumerate}
+\end{frame}
+
+
+\section{Самообучение}
+
+
+\begin{frame}
+    \frametitle{Советы самоучке}
+
+    Двоично-десятичные коды обсуждаются, например, в \cite{bib:zubchuk:schemo, bib:lisikov:automateBase}.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Библиография}
+    \bibliographystyle{gost780u}
+    \bibliography{./../../../bibliobase}
+\end{frame}
+
+\end{document}
+
+
+
+
