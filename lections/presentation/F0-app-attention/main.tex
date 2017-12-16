@@ -66,70 +66,169 @@
 
 \section{Изучение}
 
+\subsection{Характеристики оружия}
+
 \begin{frame}
     \frametitle{Характеристики оружия}
     
     Привниматическое оружие должно:
     \begin{itemize}
-        \item Не причинять физический вред человеку, внимания которого нужно добиться. \alert{безвредно} \mode<article>{(Ведь нужно внимание, а не труп. Труп обычно совершенно невнимателен.)}
+        \item Не причинять физический вред человеку, внимания которого нужно добиться. Для краткости: \alert{безвредно} \mode<article>{(Ведь нужно внимание, а не труп. Труп обычно совершенно невнимателен.)}
         
         \item Максимально раздражать. \alert{обидно} \mode<article>{(Обида --- это тоже внимание. На войне как на войне.)} 
         
-        \item Давать возможность скрытного использования.\alert{скрытно} \mode<article>{(Или хотя бы возможность сказать "Ой, я случайно...")} 
+        \item Давать возможность скрытного использования. \alert{скрытно} \mode<article>{(Или хотя бы возможность сказать "Ой, я случайно...")} 
         
         \item Не затруднять движений. \alert{носимо} \mode<article>{(Иногда от внимания некоторых приходится спасаться бегством.)}
         
         \item Иметь низкую стоимость зарядов. \alert{дешево} \mode<article>{(Тратить на патроны больше средств, чем получишь внимания - бессмысленно.)} 
         
         \item Быть простым в использовании. \alert{просто} \mode<article>{(Иначе придется не купаться во внимании других, а уделять все свое внимание оружию.)} 
-        
+
+        \item Быть уникальным в своем роде. \alert{редко} \mode<article>{(Иначе соперник тут же использует свое такое же оружие и перетянет внимание на себя.)}
     \end{itemize}
 \end{frame}
+
+
+\subsection{Оценка характеристик}
 
 \begin{frame}
     \frametitle{Оценка характеристик оружия}
 
     \begin{columns}
-        \column{.40\textwidth}
-            Оценить каждую характеристику можно по пятибалльной шкале и свести в таблицу. Например, оценка оружия \alert{"букет цветов"} приводится в правой части слайда.
+        \column{.45\textwidth}
+            Оценить каждую характеристику можно по пятибалльной шкале и свести в таблицу. Например, оценка оружия \alert{"букет цветов"} приводится в правой части слайда. Среднюю оценку можно вычислить по формуле \eqref{eq:average}. 
+            \begin{equation}
+                \label{eq:average}
+                \text{Итого}=\frac{\displaystyle\sum_{i=1}^{n}\text{Оценка}_i}{n}
+            \end{equation}
             
             
         \column{.50\textwidth}
             \begin{center}
+                \includegraphics[width=.4\textheight]{fig/flowers}
+                
                 \begin{tabular}{c|c}
                     \hline\hline
-                    Характеристика   & Оценка\\ \hline\hline
-                    безвредно        & 5 \\
-                    обидно           & 1 \\
-                    скрытно          & 2 \\
-                    носимо           & 3 \\
-                    дешево           & 2 \\
-                    просто           & 2 \\ \hline
+                    Характеристика              & Оценка\\ \hline\hline
+                    безвредно                   & 5 \\
+                    обидно                      & 1 \\
+                    скрытно                     & 2 \\
+                    носимо                      & 4 \\
+                    дешево                      & 3 \\
+                    просто                      & 2 \\ 
+                    редко                       & 1 \\ \hline
+                    \multicolumn{1}{r|}{Итого:} & $2.57\approx 3$ \\
                 \end{tabular}
             \end{center}
     \end{columns}    
 \end{frame}
 
-\begin{frame}
-    %резиночки
+
+\subsection{Оценка существующих моделей}
+
+\begin{frame}  %айфоня
     \begin{columns}
-        \column{.70\textwidth}
-            духовые трубочки, комочки бумаги, бумажные рогаточки, резиночки для плетения!
+        \column{.50\textwidth}
+            \begin{center}
+                \includegraphics[height=.8\textheight]{fig/iphoneX}
+            \end{center}
             
-        \column{.30\textwidth}
+        \column{.40\textwidth}
             \begin{center}
                 \begin{tabular}{c|c}
                     \hline
-                    безвредно        & 5 \\
-                    обидно           & 1 \\
-                    скрытно          & 2 \\
-                    носимо           & 3 \\
-                    дешево           & 2 \\
-                    просто           & 2 \\ \hline
+                    безвредно                   & 1 \\
+                    обидно                      & 1 \\
+                    скрытно                     & 1 \\
+                    носимо                      & 5 \\
+                    дешево                      & 0 \\
+                    просто                      & 2 \\ 
+                    редко                       & 1 \\ \hline
+                    \multicolumn{1}{r|}{Итого:} & $1.57\approx 2$ \\
+                \end{tabular}
+            \end{center}
+    \end{columns}    
+    
+    Отвлекает \alert{всё} внимание от \alert{реальной жизни} на себя! Это \alert{не оружие} (см. оценки), а \alert{соперник}!
+\end{frame}
+
+Это оружие отвлекает все внимание на себя, а не привлекает внимание к хозяину. Проблема: iphoneX интереснее своего хозяина. Поэтому он вообще не является привниматическим оружием. Это оружие массового поражения, которое отвлекает внимание от реальной жизни на себя.
+
+\begin{frame}  %духовая трубочка
+    \begin{columns}
+        \column{.50\textwidth}
+            \begin{center}
+                \includegraphics[width=.8\textwidth]{fig/airpipe}
+            \end{center}
+            
+        \column{.40\textwidth}
+            \begin{center}
+                \begin{tabular}{c|c}
+                    \hline
+                    безвредно                   & 4 \\
+                    обидно                      & 5 \\
+                    скрытно                     & 5 \\
+                    носимо                      & 5 \\
+                    дешево                      & 5 \\
+                    просто                      & 4 \\ 
+                    редко                       & 0 \\ \hline
+                    \multicolumn{1}{r|}{Итого:} & $4$ \\
                 \end{tabular}
             \end{center}
     \end{columns}    
 \end{frame}
+
+Духовая трубочка может быть сделана из любой ручки. Меткая стрельба требует тренировок.
+
+
+\begin{frame} % рогатка из резиночки
+    \begin{columns}
+        \column{.50\textwidth}
+            бумажные рогаточки
+            
+        \column{.40\textwidth}
+            \begin{center}
+                \begin{tabular}{c|c}
+                    \hline
+                    безвредно                   & 4 \\
+                    обидно                      & 5 \\
+                    скрытно                     & 3 \\
+                    носимо                      & 3 \\
+                    дешево                      & 5 \\
+                    просто                      & 4 \\ 
+                    редко                       & 0 \\ \hline
+                    \multicolumn{1}{r|}{Итого:} & $3.43\approx 3$ \\
+                \end{tabular}
+            \end{center}
+    \end{columns}    
+\end{frame}
+
+
+\begin{frame} % резиночки сами по себе
+    \begin{columns}
+        \column{.50\textwidth}
+            резиночки
+            
+        \column{.40\textwidth}
+            \begin{center}
+                \begin{tabular}{c|c}
+                    \hline
+                    безвредно                   & 4 \\
+                    обидно                      & 5 \\
+                    скрытно                     & 5 \\
+                    носимо                      & 5 \\
+                    дешево                      & 4 \\
+                    просто                      & 4 \\ 
+                    редко                       & 0 \\ \hline
+                    \multicolumn{1}{r|}{Итого:} & $3.86\approx 4$ \\
+                \end{tabular}
+            \end{center}
+    \end{columns}    
+\end{frame}
+
+Экономический бум в Китае сделал резиночки для плетения очень доступными.
+
 
 \section{Создание и использование}
 
@@ -139,27 +238,35 @@
     
 \end{frame}
 
+
+\subsection{Характеристики}
+
 \begin{frame}
     \frametitle{БЗДЕНЬК-2}
     \framesubtitle{Характеристики}
     
     \begin{columns}
-        \column{.70\textwidth}
+        \column{.50\textwidth}
             %фото бзденька
-        \column{.30\textwidth}
+        \column{.40\textwidth}
             \begin{center}
                 \begin{tabular}{c|c}
                     \hline
-                    безвредно        & 4 \\
-                    обидно           & 5 \\
-                    скрытно          & 4 \\
-                    носимо           & 4 \\
-                    дешево           & 3 \\
-                    просто           & 5 \\ \hline
+                    безвредно                   & 4 \\
+                    обидно                      & 5 \\
+                    скрытно                     & 4 \\
+                    носимо                      & 4 \\
+                    дешево                      & 3 \\
+                    просто                      & 5 \\ 
+                    редко                       & 4 \\ \hline
+                    \multicolumn{1}{r|}{Итого:} & $3.86\approx 4$ \\
                 \end{tabular}
             \end{center}
     \end{columns}    
 \end{frame}
+
+
+\subsection{Устройство}
 
 \begin{frame}
     \frametitle{БЗДЕНЬК-2}
@@ -181,8 +288,26 @@
 
 \begin{frame}
     \frametitle{БЗДЕНЬК-2}
-    \framesubtitle{Бюджет проекта}
-    %TODO:
+    \framesubtitle{Смета проекта}
+    
+    \begin{center}
+        \begin{tabular}{l|c|c|l}
+            \hline\hline
+            Деталь & Кол-во,шт. & Цена,руб. & Примечание \\
+            \hline\hline
+            Контроллер & 1 & 70  & Arduino Pro Mini,5V,16MHz\\
+            Светодиод  & 3 & 0.5 & Красный, синий, желтый\\
+            Breadboard & - & 50  & Чтобы не паять детали\\
+            Моторчик   & - & 50  & 4-9V, max 1A, 800 RPM\\
+            Провод     & - & 0   & Нашли в папином ящике\\
+            Транзистор & 2 & 0   & Нашли в папином ящике\\
+            Изолента   & - & 0   & Нашли в папином ящике\\
+            Фанера     & - & 0   & Нашли в гараже\\
+            Деревяшка  & - & 0   & Нашли в гараже\\
+            Зубочистки & - & 0   & Нашли на кухне\\ \hline
+            \multicolumn{2}{r|}{Итого(\alert{без учета работ}):} & \multicolumn{1}{c}{\alert{$170.50$}} & \\
+        \end{tabular}
+    \end{center}
 \end{frame}
 
 \begin{frame}
@@ -196,33 +321,48 @@
     \end{itemize}    
 \end{frame}
 
+
+\subsection{Испытания БЗДЕНЬК-2}
+
 \begin{frame}
-    \frametitle{БЗДЕНЬК-2}
-    \framesubtitle{Испытание на котах}
+    \frametitle{Испытания БЗДЕНЬК-2}
+    \begin{center}
+        В ходе испытаний ни одно живое существо не пострадало.
+
+        Физически\ldots    
+    \end{center}    
+\end{frame}
+
+\begin{frame}
+    \frametitle{Испытание на котах}
     %TODO: фото сбившихся и испуганных котов на коробке наверху
 \end{frame}
 
 \begin{frame}
-    \frametitle{БЗДЕНЬК-2}
-    \framesubtitle{Испытание на собаке}
-    %TODO: фото спящей собаки
+    \frametitle{Испытание на собаке}
+    %TODO: фото спящей собаки, засыпанной резинками
 \end{frame}
 
 \begin{frame}
-    \frametitle{БЗДЕНЬК-2}
-    \framesubtitle{Испытание на сестре}
+    \frametitle{Испытание на сестре}
     %TODO: фото улыбающейся Насти с подбитым глазом и "выбитым" зубом
 \end{frame}
 
 \begin{frame}
-    \frametitle{БЗДЕНЬК-2}
-    \framesubtitle{Испытание на родителях}
-    %TODO: фото ремня, 
-    Испытание на родителях решено не проводить\ldots
+    \frametitle{Испытания на родителях}
+    
+    \begin{center}
+        \includegraphics[width=.6\textwidth]{fig/belt}
+    \end{center}
+    
+    Испытания на родителях решено не проводить\ldots
 \end{frame}
 
 
 \section{Оценки и выводы}
+
+
+\subsection{Вывод по использованияю оружия}
 
 \begin{frame}
     \frametitle{Вывод}
@@ -236,6 +376,9 @@
     Лучше использовать его вместе, в дружеской игре --- тогда внимание будет \alert{взаимным} и \alert{добрым}.
 \end{frame}
 
+
+\subsection{Самое мощное\ldots}
+
 \begin{frame}
     \frametitle{Заключение}
     
@@ -245,24 +388,34 @@
         Самое мощное и \alert{единственное настоящее} привниматическое оружие --- это умный, сильный, увлекающийся, любопытный, а главное --- \alert{внимательный к окружающему миру} человек.
     \end{block}
 \end{frame}
+
     
+\subsection{Перспективы}
+
 \begin{frame}
     \frametitle{Перспективы и направления развития}
     
     \begin{block}{Перспективы}
         \begin{center}
-            Внимание каждому!!!
+            \alert{Внимание каждому!!!}
         \end{center}
     \end{block}
     
-    Направления\footnote{В \alert{одном} человеке могут сочетаться \alert{многие} направления, что повышает \alert{убойную силу}} развития \alert{настоящего} привнематического оружия: 
+    Направления развития \alert{настоящего} привнематического оружия: 
     \begin{itemize}
         \item искусство (музыка, танец, рисование, лепка, рукоделие,\ldots);
         \item наука (физика, математика, химия, биология, психология,\ldots);
         \item спорт (гимнастика, атлетика, плавание, боевые искусства,\ldots);
         \item помощь (людям, животным, растениям, чистоте улиц,\ldots);
-        \item \ldots
+        \item и т.д.
     \end{itemize}
+    
+    \begin{block}{}
+        \begin{center}
+            В \alert{одном} человеке могут сочетаться \alert{многие} направления, что повышает его \alert{мощность}, \alert{дальнобойность} и \alert{точность}.
+        \end{center}
+    \end{block}
+    
 \end{frame}
 
 
@@ -279,6 +432,12 @@
 \begin{frame}[allowframebreaks]{Библиография}
     \bibliographystyle{plain}
     \bibliography{./../../../bibliobase}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \resizebox{\textwidth}{!}{Благодарю за \alert{внимание}!}
+    \end{center}
 \end{frame}
 
 \end{document}
