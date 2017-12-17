@@ -8,7 +8,7 @@
 
 \title[Привниматическое оружие]{Опыт создания и использования привниматического оружия}
 
-\newcommand{\myDevice}{ТРЕНЬК-2}
+\newcommand{\myDevice}{БЗДЕНЬК-2}
 
 \begin{document}
 
@@ -299,18 +299,32 @@
 
 \begin{frame}
     \begin{center}
-        Характеристики существующих образцов можно улучшить. Выполним разработку нового образча привниматического оружия.
+        Характеристики существующих образцов можно улучшить. 
+        
+        \par\bigskip
+        
+        Выполним разработку нового образча привниматического оружия.
     \end{center}
 \end{frame}
+
 
 \section{Создание и использование}
 
 \begin{frame}
     \frametitle{\myDevice}
-    \framesubtitle{Внешний вид}
-    
+    %фото бзденьк
 \end{frame}
 
+\begin{frame}
+    \frametitle{Режимы работы \myDevice}
+    \framesubtitle{Переключаются отдельной кнопкой}
+    
+    \begin{itemize}
+        \item вялый;
+        \item импульсный;
+        \item шквал.
+    \end{itemize}    
+\end{frame}
 
 \subsection{Характеристики}
 
@@ -343,14 +357,13 @@
 \subsection{Устройство}
 
 \begin{frame}
-    \frametitle{\myDevice}
-    \framesubtitle{Устройство. Механика}
+    \frametitle{Механика \myDevice}
+    
     %TODO: механика
 \end{frame}
 
 \begin{frame}
-    \frametitle{\myDevice}
-    \framesubtitle{Устройство. Электроника}
+    \frametitle{Электроника \myDevice}
     
     \begin{center}
         \includegraphics[width=0.99\textwidth]{fig/eScheme}
@@ -358,14 +371,15 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{\myDevice}
-    \framesubtitle{Устройство. Программирование}
-    %TODO: программирование
+    \frametitle{Программирование контроллера \myDevice}
+    
+    \begin{center}
+        \includegraphics[width=0.4\textwidth]{fig/programming}
+    \end{center}
 \end{frame}
 
 \begin{frame}
-    \frametitle{\myDevice}
-    \framesubtitle{Смета проекта}
+    \frametitle{Смета проекта \myDevice}
     
     \begin{center}
         \begin{tabular}{l|c|c|l}
@@ -377,26 +391,16 @@
             Breadboard & 1  & 50   & Чтобы не паять детали\\
             Моторчик   & 1  & 50   & 4-9V, max 1A, 800 RPM\\
             Шестерёнки & 2  & 5    & Крутить обойму\\
+            Батарейка  & 1  & 40   & Крона, 9V, питание схемы\\
             Провод     & -  & 0    & Нашли в папином ящике\\
             Транзистор & 2  & 0    & Нашли в папином ящике\\
             Изолента   & -  & 0    & Нашли в папином ящике\\
             Фанера     & -  & 0    & Нашли в гараже\\
             Деревяшка  & -  & 0    & Нашли в гараже\\
             Зубочистки & 17 & 0    & Нашли на кухне\\ \hline
-            \multicolumn{2}{r|}{Итого(\alert{без учета работ}):} & \multicolumn{1}{c}{\alert{$181.50$}} & \\
+            \multicolumn{2}{r|}{Итого(\alert{без учета работ}):} & \multicolumn{1}{c}{\alert{$221.50$}} & \\
         \end{tabular}
     \end{center}
-\end{frame}
-
-\begin{frame}
-    \frametitle{\myDevice}
-    \framesubtitle{Режимы работы}
-    
-    \begin{itemize}
-        \item вялый;
-        \item импульсный;
-        \item шквал.
-    \end{itemize}    
 \end{frame}
 
 
