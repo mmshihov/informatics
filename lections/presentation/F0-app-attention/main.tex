@@ -8,7 +8,7 @@
 
 \title[Привниматическое оружие]{Опыт создания и использования привниматического оружия}
 
-\newcommand{\myDevice}{ТРЕНЬК-2}
+\newcommand{\myDevice}{БЗДЕНЬК-2}
 
 \begin{document}
 
@@ -56,7 +56,7 @@
 \begin{frame}
     \frametitle{Аннотация}
     
-    В работе дается определение и рассматриваются виды \alert{привниматического оружия} (далее будем говорить просто: оружие). 
+    В работе дается определение и рассматриваются виды \alert{привниматического оружия} (далее будем говорить просто: \alert{оружие}). 
     
     \par\bigskip
     
@@ -91,11 +91,11 @@
 
     \par\bigskip
 
-    Внимательных людей мало и за внимание людей невнимательных, люди непримечательные издавна воюют между собой. 
+    Внимательных людей мало и за внимание таких людей, люди непримечательные издавна воюют между собой. 
 
     \par\bigskip
 
-    А какая война без оружия?
+    А какая же война без оружия?
 \end{frame}
     
 Невнимательных и нечутких людей становится все больше. Виной тому множество причин. Но основная --- столь ценное внимание все чаще рассеивается на неживые объекты, такие как телевизоры, мобильные телефоны и компьютеры.
@@ -107,7 +107,7 @@
     
     \begin{block}{Цель:}
         \begin{center}
-            поиск \alert{совершенного} привниматического оружия.
+            найти \alert{совершенное} привниматическое оружие.
         \end{center}
     \end{block}
     
@@ -115,10 +115,10 @@
     
     \begin{block}{Задачи:}
         \begin{itemize}
-            \item исследование существующих образцов; 
-            \item cоздание собственного образца;
-            \item испытание созданного образца;
-            \item обобщение полученных результатов.
+            \item исследовать существующие образцы; 
+            \item cоздать собственный образец;
+            \item испытать свой образец;
+            \item обобщить результаты испытаний.
         \end{itemize}
     \end{block}
 \end{frame}
@@ -300,11 +300,15 @@
 
 \begin{frame}
     \begin{center}
-        Характеристики существующих образцов можно улучшить. 
+        Видно, что существующие образцы можно улучшить. 
         
         \par\bigskip
         
-        Выполним разработку нового образча привниматического оружия.
+        Разработаем свой вариант оружия.
+        
+        \par\bigskip
+
+        За основу возмьмем стрельбу резиночками и улучшим их невысокие характеристики \alert{Просто} и \alert{Редко}.
     \end{center}
 \end{frame}
 
@@ -322,36 +326,18 @@
     
     \begin{itemize}
         \item вялый;
-        \item импульсный;
-        \item шквал.
-    \end{itemize}    
-\end{frame}
-
-\subsection{Характеристики}
-
-\begin{frame}
-    \frametitle{\myDevice}
-    \framesubtitle{Характеристики}
-    
-    \begin{columns}
-        \column{.50\textwidth}
-            %фото бзденька
-        \column{.40\textwidth}
             \begin{center}
-                \begin{tabular}{c|c}
-                    \hline\hline
-                    Характеристика              & Оценка\\ \hline\hline
-                    Безвредно                   & 4 \\
-                    Обидно                      & 5 \\
-                    Скрытно                     & 4 \\
-                    Носимо                      & 4 \\
-                    Дешево                      & 3 \\
-                    Просто                      & 5 \\ 
-                    Редко                       & 4 \\ \hline
-                    \multicolumn{1}{r|}{Итого:} & $3.86\approx 4$ \\
-                \end{tabular}
+                \includegraphics[width=0.5\textwidth]{fig/modeSlow}
             \end{center}
-    \end{columns}    
+        \item импульсный;
+            \begin{center}
+                \includegraphics[width=0.5\textwidth]{fig/modePulse}
+            \end{center}
+        \item шквал.
+            \begin{center}
+                \includegraphics[width=0.5\textwidth]{fig/modeStorm}
+            \end{center}
+    \end{itemize}    
 \end{frame}
 
 
@@ -360,14 +346,26 @@
 \begin{frame}
     \frametitle{Механика \myDevice}
     
-    %TODO: механика
+    %TODO:
+    \begin{center}
+        %\includegraphics[width=0.99\textwidth]{fig/eMechanism}
+    \end{center}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Электроника \myDevice}
+    \frametitle{Электроника {\myDevice} --- схема}
     
     \begin{center}
         \includegraphics[width=0.99\textwidth]{fig/eScheme}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Электроника {\myDevice} --- макет}
+    
+    %TODO:
+    \begin{center}
+        %\includegraphics[width=0.99\textwidth]{fig/eModel}
     \end{center}
 \end{frame}
 
@@ -392,14 +390,13 @@
             Breadboard & 1  & 50   & Чтобы не паять детали\\
             Моторчик   & 1  & 50   & 4-9V, max 1A, 800 RPM\\
             Шестерёнки & 2  & 5    & Крутить обойму\\
-            Батарейка  & 1  & 40   & Крона, 9V, питание схемы\\
+            Батарейка  & 2  & 40   & Крона, 9V, питание схемы\\
             Провод     & -  & 0    & Нашли в папином ящике\\
-            Транзистор & 2  & 0    & Нашли в папином ящике\\
-            Изолента   & -  & 0    & Нашли в папином ящике\\
-            Фанера     & -  & 0    & Нашли в гараже\\
-            Деревяшка  & -  & 0    & Нашли в гараже\\
-            Зубочистки & 17 & 0    & Нашли на кухне\\ \hline
-            \multicolumn{2}{r|}{Итого(\alert{без учета работ}):} & \multicolumn{1}{c}{\alert{$221.50$}} & \\
+            Транзистор & 2  & 0    & Управлять моторчиком (нашли)\\
+            Фанера     & -  & 0    & Для корпуса (нашли в гараже)\\
+            Текстолит  & -  & 0    & Для ствола (спонсор --- папа)\\
+            Резиночки  & 84 & 0    & Патроны (нашли в детской)\\ \hline
+            \multicolumn{2}{r|}{Итого(\alert{без учета работ}):} & \multicolumn{1}{c}{\alert{$261.50$}} & \\
         \end{tabular}
     \end{center}
 \end{frame}
@@ -436,7 +433,7 @@
     \frametitle{Испытание на сестре}
     
     \begin{center}
-        \includegraphics[width=0.6\textwidth]{fig/nastyaWork}
+        \includegraphics[width=0.55\textwidth]{fig/nastyaWork}
     \end{center}
 \end{frame}
 
@@ -453,8 +450,36 @@
 
 \section{Оценки и выводы}
 
+\begin{frame}
+    \frametitle{Сравнительная оценка характеристик \myDevice}
+    
+    \begin{columns}
+        \column{.30\textwidth}
+            %фото бзденька
+        \column{.70\textwidth}
+            \begin{center}
+                \begin{tabular}{c|c|c}
+                    \hline\hline
+                    Характеристика              & {\myDevice}   & Резиночки\\ \hline\hline
+                    Безвредно                   & 4             & 4\\
+                    Обидно                      & 5             & 5\\
+                    Скрытно                     & \alert{3}     & 5\\
+                    Носимо                      & \alert{3}     & 5\\
+                    Дешево                      & \alert{3}     & 4\\
+                    Просто                      & 5             & \alert{4}\\ 
+                    Редко                       & 5             & \alert{0}\\ \hline
+                    \multicolumn{1}{r|}{Итого:} & $4$        & $3.86$ \\
+                \end{tabular}
+            \end{center}
+    \end{columns}
+\end{frame}
 
-\subsection{Вывод по использованияю оружия}
+Оценка созданного оружия на практике оказалась невысокой. Мы улучшили характеристики \alert{Просто} (стрельба сводится к нажатию кнопки) и \alert{Редко} (на руках единственный в мире {\myDevice}). Однако это привело к ухудщению других характеристик: Скрытно, Носимо и Дешево.
+
+Ценность практического результата невелика, но проведенные исследования позволяют сделать однозначные научные выводы!
+
+
+\subsection{Вывод по использованию оружия}
 
 \begin{frame}
     \frametitle{Вывод}
@@ -522,19 +547,19 @@
     Уверены, пригодится всем:
     \begin{itemize}
         \item создание характера в \cite{bib:kovey:sevenHabits};
-        \item грамотный Русский язык привлекателен в \cite{bib:gal:WordLiveAndDeath}.
+        \item живой Русский язык в \cite{bib:gal:WordLiveAndDeath}.
     \end{itemize}
     
     \par\bigskip
     
-    Совсем не нужно тем, кому не очень интересно что такое:
+    \alert{Совсем не нужно} тем, кому не очень интересно что такое:
     \begin{itemize}
         \item программирование \cite{bib:kernigan:practice};
         \item микроконтроллеры и электроника \cite{bib:margolis:Arduino}.
     \end{itemize}
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Библиография}
+\begin{frame}{Список литературы}
     \bibliographystyle{unsrt}
     \bibliography{./../../../bibliobase}
 \end{frame}
